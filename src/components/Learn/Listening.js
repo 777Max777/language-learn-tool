@@ -164,10 +164,9 @@ const Listening = () => {
   };
 
   const speechAnswer = (word) => {
-    console.log(word)
-    console.log(word.answer)
     speech.text = word.answer
     window.speechSynthesis.speak(speech);
+    answerRef.current.focus()
   }
 
   const clearField = () => {
