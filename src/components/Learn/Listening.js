@@ -178,7 +178,7 @@ const Listening = () => {
 
   const handleKeyDown = (event) => {
     if (answerRef.current.value && event.key === 'Enter') {
-      console.log(`typed: ${answerRef.current.value} === learning: ${listLearning[indexSelectQuestion].answer}`)
+      isNotCorrect && handleNextButtonPress()
       setSelectAnswer(answerRef.current.value);
 
       if (
