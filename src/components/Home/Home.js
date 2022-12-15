@@ -271,10 +271,10 @@ const Home = () => {
           selectedKeys={selection}
         >
           <Table.Header>
-            <Table.Column width={200}>ID</Table.Column>
             <Table.Column>name</Table.Column>
             <Table.Column>quantity</Table.Column>
             <Table.Column>Progress</Table.Column>
+            <Table.Column>Progress Listening</Table.Column>
             <Table.Column width={190}>Create at</Table.Column>
             <Table.Column width={40} align={'end'}></Table.Column>
           </Table.Header>
@@ -298,9 +298,15 @@ const Home = () => {
                     100) /
                   item.data.data.length
                 ).toFixed(2);
+                const progressLearning = (
+                  (item.data.data.filter((item) => {
+                    return item.learnedListening;
+                  }).length *
+                    100) /
+                  item.data.data.length
+                ).toFixed(2);
                 return (
                   <Table.Row key={item.id}>
-                    <Table.Cell>{item.id}</Table.Cell>
                     <Table.Cell>{item.data.name}</Table.Cell>
                     <Table.Cell>{item.data.data.length}</Table.Cell>
                     <Table.Cell>
@@ -324,6 +330,32 @@ const Home = () => {
                           progress >= 90
                             ? 'success'
                             : progress > 0
+                            ? 'warning'
+                            : 'error'
+                        }
+                      />
+                    </Table.Cell>
+                    <Table.Cell>
+                      <Text
+                        p
+                        b
+                        color={
+                          progressLearning >= 90
+                            ? 'success'
+                            : progressLearning > 0
+                            ? 'warning'
+                            : 'error'
+                        }
+                      >
+                        {progressLearning} %
+                      </Text>
+                      <Progress
+                        size={'xs'}
+                        value={progressLearning}
+                        color={
+                          progressLearning >= 90
+                            ? 'success'
+                            : progressLearning > 0
                             ? 'warning'
                             : 'error'
                         }

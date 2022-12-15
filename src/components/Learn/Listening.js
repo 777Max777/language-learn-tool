@@ -68,7 +68,7 @@ const Listening = () => {
   useEffect(() => {
     const listSeven = getSevenFromList(
       listAllQuestion.filter((item) => {
-        return item.learned === false;
+        return item.learnedListening === false;
       })
     );
     if (listSeven.length === 0) {
@@ -79,7 +79,7 @@ const Listening = () => {
     setSpeech(speech)
     clearField()
     setTotalAnswer(
-      listAllQuestion.filter((item) => item.learned === true).length
+      listAllQuestion.filter((item) => item.learnedListening === true).length
     );
     setListLearning(listSeven);
     setCloneListLearning(listSeven);
@@ -148,7 +148,7 @@ const Listening = () => {
   const updateListLocalStorage = () => {
     listAllQuestion.forEach((element) => {
       if (element.count === 2) {
-        element.learned = true;
+        element.learnedListening = true;
       }
       delete element.count;
     });
@@ -158,7 +158,7 @@ const Listening = () => {
     setShowResult(true);
     setTotalAnswer(
       JSON.parse(localStorage.getItem(id)).data.filter(
-        (item) => item.learned === true
+        (item) => item.learnedListening === true
       ).length
     );
   };
@@ -239,7 +239,7 @@ const Listening = () => {
     setShowResult(false);
     const listSeven = getSevenFromList(
       listAllQuestion.filter((item) => {
-        return item.learned === false;
+        return item.learnedListening === false;
       })
     );
     if (listSeven.length === 0) {

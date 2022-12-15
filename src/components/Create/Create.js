@@ -47,6 +47,7 @@ const Create = () => {
           answer: tFirst,
           question: tSecond,
           learned: false,
+          learnedListening: false
         };
       });
       if (isSplit && listObject.length > 50) {
