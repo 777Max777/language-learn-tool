@@ -44,8 +44,8 @@ const Create = () => {
         const tSecond = second.trim();
         return {
           i: nanoid(6),
-          answer: tFirst.length < tSecond.length ? tFirst : tSecond,
-          question: tFirst.length < tSecond.length ? tSecond : tFirst,
+          answer: tFirst,
+          question: tSecond,
           learned: false,
         };
       });
