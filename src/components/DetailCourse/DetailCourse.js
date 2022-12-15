@@ -140,6 +140,23 @@ const DetailCourse = () => {
     }
   };
 
+  const handleButtonListeningPress = () => {
+    const temp1 = JSON.parse(localStorage.getItem(id));
+    if (course.filter((item) => item.learned === false).length === 0) {
+      course.forEach((item) => {
+        item.learned = false;
+      });
+      temp1.data = course;
+      localStorage.setItem(id, JSON.stringify(temp1));
+    }
+
+    if (temp1.name.includes('multiple')) {
+      navigate(`/listening/pmg/${id}`);
+    } else {
+      navigate(`/listening/${id}`);
+    }
+  };
+
   const handleExport = () => {
     const list = JSON.parse(localStorage.getItem(id)).data;
     const t = list
@@ -429,6 +446,9 @@ const DetailCourse = () => {
                   case 'Learn':
                     handleButtonLearnPress();
                     break;
+                  case 'Listening':
+                    handleButtonListeningPress();
+                    break;
                   case 'Exam':
                     setShowEnterQuantityQuestion(true);
                     break;
@@ -457,6 +477,14 @@ const DetailCourse = () => {
                   icon={<FcReading size={20} />}
                 >
                   Learn
+                </Dropdown.Item>
+                <Dropdown.Item
+                  key="Listening"
+                  description="Listening course"
+                  color="success"
+                  icon={<FcReading size={20} />}
+                >
+                  Listening
                 </Dropdown.Item>
                 <Dropdown.Item
                   key="Exam"
