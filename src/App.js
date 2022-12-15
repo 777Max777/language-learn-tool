@@ -24,7 +24,7 @@ function App() {
 
   return (
     <Routes>
-      {/* <Route path={'/'} element={<Layout />}>
+      <Route path={'/'} element={<Layout />}>
         <Route path={'/'} element={<HomeScreen title={'Home | AdonisGM'} />} />
         <Route
           path={'/create'}
@@ -62,11 +62,12 @@ function App() {
       <Route
         path={'*'}
         element={<NotFoundScreen title={'Not found | AdonisGM'} />}
-      /> */}
-      <Route
+      />
+      {/*<Route
         path={'*'}
         element={<MessageScreen title={'Shutdown | AdonisGM'} />}
       />
+  */}
     </Routes>
   );
 }
