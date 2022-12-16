@@ -582,25 +582,28 @@ const DetailCourse = () => {
             {!searching && (
               <Table css={{ minHeight: 400 }}>
                 <Table.Header>
-                  <Table.Column width={100}>ID</Table.Column>
-                  <Table.Column>Question</Table.Column>
                   <Table.Column css={{ textAlign: 'center' }} width={80}>
-                    Answer
+                    Term
                   </Table.Column>
+
+                  <Table.Column>Definition</Table.Column>
+                  
                   <Table.Column width={20}></Table.Column>
                 </Table.Header>
                 <Table.Body>
                   {courseSearch.map((item) => (
                     <Table.Row key={item.i}>
-                      <Table.Cell>{item.i}</Table.Cell>
+                      
+                      <Table.Cell css={{ textAlign: 'center' }}>
+                        {item.answer}
+                      </Table.Cell>
+
                       <Table.Cell>
                         <span className={classes.questionSpan}>
                           {item.question}
                         </span>
                       </Table.Cell>
-                      <Table.Cell css={{ textAlign: 'center' }}>
-                        {item.answer}
-                      </Table.Cell>
+
                       <Table.Cell>
                         <RiEyeLine
                           color="0072f5"
