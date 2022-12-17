@@ -16,10 +16,10 @@ const Layout = () => {
         Copyright © {new Date().getFullYear()}{' '}
         <LinkNextUI
           target={'_blank'}
-          href="https://github.com/AdonisGM"
+          href="https://github.com/777Max777/language-learn-tool"
           color={'text'}
         >
-          <strong>AdonisGM</strong>
+          <strong>777Max777</strong>
         </LinkNextUI>
       </Text>
       <Text size={10} css={{ textAlign: 'center'}}>Version v{packageJson.version}</Text>

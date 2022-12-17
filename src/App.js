@@ -26,51 +26,51 @@ function App() {
   return (
     <Routes>
       <Route path={'/'} element={<Layout />}>
-        <Route path={'/'} element={<HomeScreen title={'Home | AdonisGM'} />} />
+        <Route path={'/'} element={<HomeScreen title={'Home'} />} />
         <Route
           path={'/create'}
-          element={<CreateScreen title={'Create course | AdonisGM'} />}
+          element={<CreateScreen title={'Create course'} />}
         />
         <Route
           path={'/course/:id'}
-          element={<DetailCourseScreen title={'Detail course | AdonisGM'} />}
+          element={<DetailCourseScreen title={'Detail course'} />}
         />
         <Route
           path={'/learn/:id'}
-          element={<LearnScreen title={'Learn course | AdonisGM'} />}
+          element={<LearnScreen title={'Learn course'} />}
         />
         <Route
           path={'/listening/:id'}
-          element={<ListeningScreen title={'Listening course | AdonisGM'} />}
+          element={<ListeningScreen title={'Listening course'} />}
         />
         <Route
           path={'/learn/pmg/:id'}
-          element={<LearnPmgScreen title={'Learn PMG course | AdonisGM'} />}
+          element={<LearnPmgScreen title={'Learn PMG course'} />}
         />
         <Route
           path={'/merge'}
-          element={<MergeScreen title={'Merge course | AdonisGM'} />}
+          element={<MergeScreen title={'Merge course'} />}
         />
       </Route>
       <Route
         path={'/course/:id/exam'}
-        element={<ExamScreen title={'Exam Pmg Screen | AdonisGM'} />}
+        element={<ExamScreen title={'Exam Pmg Screen'} />}
       />
       <Route
         path={'/message'}
-        element={<MessageScreen title={'Message | AdonisGM'} />}
+        element={<MessageScreen title={'Message'} />}
       />
       <Route
         path={'/course/pmg/:id/exam'}
-        element={<ExamScreenPmg title={'Exam Pmg Screen | AdonisGM'} />}
+        element={<ExamScreenPmg title={'Exam Pmg Screen'} />}
       />
       <Route
         path={'*'}
-        element={<NotFoundScreen title={'Not found | AdonisGM'} />}
+        element={<NotFoundScreen title={'Not found'} />}
       />
       {/*<Route
         path={'*'}
-        element={<MessageScreen title={'Shutdown | AdonisGM'} />}
+        element={<MessageScreen title={'Shutdown '} />}
       />
   */}
     </Routes>

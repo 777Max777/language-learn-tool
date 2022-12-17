@@ -25,15 +25,15 @@ const MessageScreen = () => {
       <Text p>Chúc bạn một ngày tốt lành.</Text>
       <Spacer y={1} />
       <Text p>
-        From: <strong>AdonisGM</strong>
+        From: <strong>777Max777</strong>
       </Text>
       <Spacer y={4} />
       <Text p i>
         Source code của trang web này đã được mình đưa lên Github. Nếu bạn muốn
         tham khảo thì có thể vào đây:
       </Text>
-      <a href="https://github.com/AdonisGM/quizlet-learn">
-        https://github.com/AdonisGM/quizlet-learn
+      <a href="https://github.com/777Max777/language-learn-tool">
+        https://github.com/777Max777/language-learn-tool
       </a>
     </div>
   );

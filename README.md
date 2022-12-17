@@ -58,7 +58,7 @@ webpack compiled successfully
 
 ## Author
 
-Name: AdonisGM
+Name: 777Max777
 
 ## Contributer
 
