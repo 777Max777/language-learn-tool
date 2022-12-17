@@ -60,6 +60,7 @@ const Listening = () => {
   const [numberLearning, setNumberLearning] = useState(0);
   const [totalAnswer, setTotalAnswer] = useState(0);
   const [isShowRightAnswer, setShowIsRightAnswer] = useState(false);
+  const [isAlmostCorrectWord, seIsAlmostCorrectWord] = useState(false);
   //const [typedAnswer, setTypedAnswer] = useState(0);
   const answerRef = useRef()
   const [speech, setSpeech] = useState(new SpeechSynthesisUtterance())
@@ -73,18 +74,19 @@ const Listening = () => {
     );
     if (listSeven.length === 0) {
       navigate('/course/' + id);
+    } else {
+      speech.rate = 0.8
+      speech.lang = 'en'
+      setSpeech(speech)
+      clearField()
+      setTotalAnswer(
+        listAllQuestion.filter((item) => item.learnedListening === true).length
+      );
+      setListLearning(listSeven);
+      setCloneListLearning(listSeven);
+      setIndexSelectQuestion(0);
+      speechAnswer(listSeven[indexSelectQuestion])
     }
-    speech.rate = 0.8
-    speech.lang = 'en'
-    setSpeech(speech)
-    clearField()
-    setTotalAnswer(
-      listAllQuestion.filter((item) => item.learnedListening === true).length
-    );
-    setListLearning(listSeven);
-    setCloneListLearning(listSeven);
-    setIndexSelectQuestion(0);
-    speechAnswer(listSeven[indexSelectQuestion])
     ReactGA.event({
       category: 'Learn',
       action:
@@ -176,13 +178,15 @@ const Listening = () => {
   }
 
   const handleKeyDown = (event) => {
-    if (answerRef.current.value && event.key === 'Enter') {
+    if (answerRef.current.value
+      && answerRef.current.value.length > 0
+      && event.key === 'Enter') {
       isNotCorrect && handleNextButtonPress()
       setSelectAnswer(answerRef.current.value);
 
       if (
-        answerRef.current.value ===
-        listLearning[indexSelectQuestion].answer
+        answerRef.current.value.toLowerCase() ===
+        listLearning[indexSelectQuestion].answer.toLowerCase()
       ) {
         listLearning[indexSelectQuestion].count =
           listLearning[indexSelectQuestion].count + 1;
@@ -205,8 +209,29 @@ const Listening = () => {
       } else {
         listLearning[indexSelectQuestion].lastIncorrect = true;
         setIsNotCorrect(true);
+        seIsAlmostCorrectWord(true)
       }
     }
+  }
+
+  const handleRightAnswer = () => {
+    listLearning[indexSelectQuestion].count =
+      listLearning[indexSelectQuestion].count + 1;
+    listLearning[indexSelectQuestion].lastIncorrect = undefined;
+
+    setTimeout(() => {
+      listLearning[indexSelectQuestion].lastIncorrectClone =
+        listLearning[indexSelectQuestion].lastIncorrect;
+      if (indexSelectQuestion !== listLearning.length - 1) {
+        setIndexSelectQuestion(indexSelectQuestion + 1);
+        speechAnswer(listLearning[indexSelectQuestion + 1])
+        clearField()
+      } else {
+        repeatListLearning();
+      }
+      setIsNotCorrect(false);
+      seIsAlmostCorrectWord(false)
+    }, 1000);
   }
 
   const handleNextButtonPress = () => {
@@ -235,7 +260,7 @@ const Listening = () => {
     }
   };
 
-  const handleCloseModal = () => {
+  const handleCloseModal = useCallback(() => {
     setShowResult(false);
     const listSeven = getSevenFromList(
       listAllQuestion.filter((item) => {
@@ -248,9 +273,9 @@ const Listening = () => {
     setListLearning(listSeven);
     setCloneListLearning(listSeven);
     setIndexSelectQuestion(0);
-    speechAnswer(listLearning[0])
+    speechAnswer(listSeven[0])
     clearField()
-  };
+  }, [listLearning, cloneListLearning, cloneListLearning, indexSelectQuestion, showResult])
 
   const progress = ((totalAnswer / listAllQuestion.length) * 100).toFixed(2);
 
@@ -421,10 +446,29 @@ const Listening = () => {
                       whiteSpace: 'pre-line',
                       fontWeight: '500',
                     }}
-                    color={'warning'}
+                    color={'primary'}
                   >
-                    Correct is {listLearning[indexSelectQuestion].answer}
+                    Correct is: "{
+                      listLearning[indexSelectQuestion].answer
+                        .split('')
+                        .map((item, index) => {
+                          if (index <= answerRef.current.value.length - 1
+                            && answerRef.current.value.charAt(index).toLowerCase() != item) {
+                            return <u><font color='red'>{item}</font></u>
+                          } else {
+                            return item
+                          }
+                        })}"
                   </Text>
+                  {isAlmostCorrectWord && (
+                    <Button
+                      onPress={handleRightAnswer}
+                      size={'sm'}
+                      color={'secondary'}
+                    >
+                      Choose your right answer
+                    </Button>
+                  )}
                   <Button
                     onPress={handleNextButtonPress}
                     size={'sm'}
