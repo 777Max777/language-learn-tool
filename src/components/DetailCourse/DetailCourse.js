@@ -464,6 +464,14 @@ const DetailCourse = () => {
                   case 'Reset':
                     handleReset();
                     break;
+                  case 'Configuration': 
+                    let module = JSON.parse(localStorage.getItem(id))
+                    module.data.forEach(item => {
+                      item.learnedListening = true
+                      item.learned = true
+                    })
+                    localStorage.setItem(id, JSON.stringify(module));
+                    break
                   default:
                     break;
                 }
@@ -527,6 +535,14 @@ const DetailCourse = () => {
                   icon={<FcSynchronize size={20} />}
                 >
                   Reset progress
+                </Dropdown.Item>
+                <Dropdown.Item
+                  key="Configuration"
+                  description="Set up module to 100% progress"
+                  color="warning"
+                  icon={<FcSynchronize size={20} />}
+                >
+                  Set up progress
                 </Dropdown.Item>
               </Dropdown.Section>
             </Dropdown.Menu>
