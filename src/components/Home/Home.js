@@ -213,11 +213,11 @@ const Home = () => {
               <Dropdown.Section title="Manual">
                 <Dropdown.Item
                   key="quizlet"
-                  description="Create new course by export Quizlet"
+                  description="Importing a module as a table"
                   color="primary"
                   icon={<FcFile />}
                 >
-                  Quizlet
+                  Create module
                 </Dropdown.Item>
                 <Dropdown.Item
                   key="import"
