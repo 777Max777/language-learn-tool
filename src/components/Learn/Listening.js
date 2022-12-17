@@ -246,7 +246,7 @@ const Listening = () => {
     }
   };
 
-  const repeatListLearning = () => {
+  const repeatListLearning = useCallback(() => {
     clearField()
     const t = listLearning.filter((item) => {
       return item.count <= 1;
@@ -258,7 +258,7 @@ const Listening = () => {
       setIndexSelectQuestion(0);
       speechAnswer(listLearning[0])
     }
-  };
+  }, [listLearning])
 
   const handleCloseModal = useCallback(() => {
     setShowResult(false);

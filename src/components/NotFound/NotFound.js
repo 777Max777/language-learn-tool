@@ -14,17 +14,6 @@ const NotFound = () => {
       <Text size={14} weight={'light'} css={{textAlign: "center"}}>
         If you think this is a mistake, please contact the administrator.
       </Text>
-      <Spacer y={3} />
-      <Text size={10}>
-        Copyright © {new Date().getFullYear()}{' '}
-        <LinkNextUI
-          target={'_blank'}
-          href="https://github.com/AdonisGM"
-          color={'text'}
-        >
-          <strong>AdonisGM</strong>
-        </LinkNextUI>
-      </Text>
     </div>
   );
 };
