@@ -144,7 +144,7 @@ const DetailCourse = () => {
     const temp1 = JSON.parse(localStorage.getItem(id));
     if (course.filter((item) => item.learned === false).length === 0) {
       course.forEach((item) => {
-        item.learned = false;
+        item.learnedListening = false;
       });
       temp1.data = course;
       localStorage.setItem(id, JSON.stringify(temp1));

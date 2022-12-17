@@ -74,19 +74,18 @@ const Listening = () => {
     );
     if (listSeven.length === 0) {
       navigate('/course/' + id);
-    } else {
-      speech.rate = 0.8
-      speech.lang = 'en'
-      setSpeech(speech)
-      clearField()
-      setTotalAnswer(
-        listAllQuestion.filter((item) => item.learnedListening === true).length
-      );
-      setListLearning(listSeven);
-      setCloneListLearning(listSeven);
-      setIndexSelectQuestion(0);
-      speechAnswer(listSeven[indexSelectQuestion])
     }
+    speech.rate = 0.8
+    speech.lang = 'en'
+    setSpeech(speech)
+    clearField()
+    setTotalAnswer(
+      listAllQuestion.filter((item) => item.learnedListening === true).length
+    );
+    setListLearning(listSeven);
+    setCloneListLearning(listSeven);
+    setIndexSelectQuestion(0);
+    speechAnswer(listSeven[indexSelectQuestion])
     ReactGA.event({
       category: 'Learn',
       action:
@@ -112,7 +111,7 @@ const Listening = () => {
 
       setNumberLearning((countLearn * 100) / totalL);
     }
-  }, [selectAnswer]);
+  }, [selectAnswer, cloneListLearning]);
 
   // function and handler
   const generateAnswer = (answer) => {
@@ -177,7 +176,7 @@ const Listening = () => {
     answerRef.current.focus()
   }
 
-  const handleKeyDown = (event) => {
+  const handleKeyDown = useCallback((event) => {
     if (answerRef.current.value
       && answerRef.current.value.length > 0
       && event.key === 'Enter') {
@@ -212,9 +211,9 @@ const Listening = () => {
         seIsAlmostCorrectWord(true)
       }
     }
-  }
+  }, [listLearning, isNotCorrect, indexSelectQuestion])
 
-  const handleRightAnswer = () => {
+  const handleRightAnswer = useCallback(() => {
     listLearning[indexSelectQuestion].count =
       listLearning[indexSelectQuestion].count + 1;
     listLearning[indexSelectQuestion].lastIncorrect = undefined;
@@ -232,9 +231,9 @@ const Listening = () => {
       setIsNotCorrect(false);
       seIsAlmostCorrectWord(false)
     }, 1000);
-  }
+  }, [listLearning, indexSelectQuestion])
 
-  const handleNextButtonPress = () => {
+  const handleNextButtonPress = useCallback(() => {
     listLearning[indexSelectQuestion].lastIncorrectClone =
       listLearning[indexSelectQuestion].lastIncorrect;
     if (indexSelectQuestion !== listLearning.length - 1) {
@@ -244,7 +243,7 @@ const Listening = () => {
     } else {
       repeatListLearning();
     }
-  };
+  }, [listLearning, indexSelectQuestion])
 
   const repeatListLearning = useCallback(() => {
     clearField()
@@ -256,7 +255,7 @@ const Listening = () => {
     } else {
       setListLearning(t);
       setIndexSelectQuestion(0);
-      speechAnswer(listLearning[0])
+      speechAnswer(t[0])
     }
   }, [listLearning])
 
@@ -275,7 +274,7 @@ const Listening = () => {
     setIndexSelectQuestion(0);
     speechAnswer(listSeven[0])
     clearField()
-  }, [listLearning, cloneListLearning, cloneListLearning, indexSelectQuestion, showResult])
+  }, [listLearning, listAllQuestion, cloneListLearning, cloneListLearning, indexSelectQuestion, showResult])
 
   const progress = ((totalAnswer / listAllQuestion.length) * 100).toFixed(2);
 
