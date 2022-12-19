@@ -6,12 +6,23 @@ import {
   Text,
   Progress,
 } from '@nextui-org/react';
-import { Fragment, useEffect, useState } from 'react';
-import Testing from "./Testing/Testing"
+import { Fragment, useCallback, useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { MdKeyboardBackspace } from 'react-icons/md';
 import classes from './Learn.module.css';
 import ReactGA from 'react-ga4';
+
+const styleCardCorrect = {
+  cursor: 'pointer',
+  borderColor: '#23b26d',
+  backgroundColor: '#f2fbf6',
+};
+
+const styleCardIncorrect = {
+  cursor: 'pointer',
+  borderColor: '#ff9c8c',
+  backgroundColor: '#fbf2f2',
+};
 
 const Learning = () => {
   // init react-router-dom
@@ -46,7 +57,13 @@ const Learning = () => {
     setTotalAnswer(
       listAllQuestion.filter((item) => item.learned === true).length
     );
+    const learned = listAllQuestion.filter(item => item.learned === true)
     setListLearning([unlearned[random]]);
+    setListAllQuestion(prev => prev.map(item => {
+      if (item.i === unlearned[random].i)
+        item.isWatched = true
+      return item
+    }))
     setIndexSelectQuestion(0);
     ReactGA.event({
       category: 'Learning',
@@ -72,15 +89,12 @@ const Learning = () => {
   }, [indexSelectQuestion, listLearning]);
 
   useEffect(() => {
-    if (cloneListLearning.length > 0) {
-      const countLearn = cloneListLearning.filter((item) => {
-        return item.count === 2;
-      }).length;
-      const totalL = cloneListLearning.length;
+    const learned = listAllQuestion.filter(item => item.learned === true)
 
-      setNumberLearning((countLearn * 100) / totalL);
-    }
-  }, [selectAnswer]);
+    const totalL = learned.length;
+
+    setNumberLearning((listAllQuestion.length * totalL) / 100 );
+  }, [selectAnswer, listAllQuestion]);
 
   // function and handler
   const generateAnswer = (answer) => {
@@ -104,11 +118,10 @@ const Learning = () => {
 
   const updateListLocalStorage = () => {
     listAllQuestion.forEach((element) => {
-      if (element.count === 2) {
-        element.learned = true;
+      if (element.learned) {
+        delete element.count;
       }
-      delete element.count;
-    });
+    })
     const temp = JSON.parse(localStorage.getItem(id));
     temp.data = listAllQuestion;
     localStorage.setItem(id, JSON.stringify(temp));
@@ -117,7 +130,7 @@ const Learning = () => {
         (item) => item.learned === true
       ).length
     );
-  };
+  }
 
   const handleCardAnswerPress = (key) => {
     setSelectAnswer(key);
@@ -130,29 +143,74 @@ const Learning = () => {
         listLearning[indexSelectQuestion].count + 1;
       listLearning[indexSelectQuestion].lastIncorrect = undefined;
 
+      listLearning[indexSelectQuestion].lastIncorrectClone =
+        listLearning[indexSelectQuestion].lastIncorrect;
+      /*if (indexSelectQuestion !== listLearning.length - 1) {
+        setIndexSelectQuestion(indexSelectQuestion + 1);
+      } else {
+        repeatListLearning();
+      }*/
+      if (listLearning[indexSelectQuestion].count < 2) {
+        setCloneListLearning(prev => {
+          console.log(`prev`)
+          console.log(prev)
+          prev.push(listLearning[indexSelectQuestion])
+          return prev
+        })
+      } else {
+        console.log('Выучил слово')
+        setListAllQuestion(prev => prev.map(item => {
+          if (item.i === listLearning[indexSelectQuestion].i) {
+            item.learned = true
+            console.log(item)
+          }
+          return item
+        }))
+      }
       setTimeout(() => {
-        listLearning[indexSelectQuestion].lastIncorrectClone =
-          listLearning[indexSelectQuestion].lastIncorrect;
-        if (indexSelectQuestion !== listLearning.length - 1) {
-          setIndexSelectQuestion(indexSelectQuestion + 1);
-        } else {
-          repeatListLearning();
-        }
-      }, 500);
+        updateBatches()
+      }, 500)
     } else {
       listLearning[indexSelectQuestion].lastIncorrect = true;
       setIsNotCorrect(true);
     }
-  };
+  }
+
+  const updateBatches = useCallback(() => {
+    if (cloneListLearning.length == 3 && listLearning.length - 1 == 0) {
+      setListLearning(cloneListLearning)
+      setCloneListLearning([])
+      updateListLocalStorage();
+    } else if (listLearning.length - 1 == 0) {
+      const unlearned = listAllQuestion.filter(item => item.learned === false && !item.isWatched)
+      //console.log(listAllQuestion)
+      const random = Math.floor(Math.random() * unlearned.length);
+      //console.log([unlearned[random]])
+      setListLearning([unlearned[random]]);
+      setListAllQuestion(prev => prev.map(item => {
+        if (item.i === unlearned[random].i)
+          item.isWatched = true
+        return item
+      }))
+    } else {
+      console.log(listLearning)
+      setListLearning(prev => prev.slice(1))
+    }
+  }, [cloneListLearning, listLearning, listAllQuestion])
 
   const handleNextButtonPress = () => {
     listLearning[indexSelectQuestion].lastIncorrectClone =
       listLearning[indexSelectQuestion].lastIncorrect;
-    if (indexSelectQuestion !== listLearning.length - 1) {
+    /*if (indexSelectQuestion !== listLearning.length - 1) {
       setIndexSelectQuestion(indexSelectQuestion + 1);
     } else {
       repeatListLearning();
-    }
+    }*/
+    setCloneListLearning(prev => {
+      prev.push(listLearning[indexSelectQuestion])
+      return prev
+    })
+    updateBatches();
   };
 
   const repeatListLearning = () => {
@@ -167,15 +225,8 @@ const Learning = () => {
     }
   };
 
-  const logicLearn = (word) => {
-    
-  }
-
-  const Writing = () => {
-    return(<></>)
-  }
-
   const progress = ((totalAnswer / listAllQuestion.length) * 100).toFixed(2);
+
   return (
     <div className={classes.main}>
       <div className={classes.progress}>
@@ -286,11 +337,75 @@ const Learning = () => {
                 listLearning[indexSelectQuestion].question}
             </Text>
             <Spacer y={2} />
-            <Testing props={answers}/>
-            {false && <Writing />}
+            {listLearning[indexSelectQuestion] &&
+              (<><div className={classes.nextButton}>
+                <Text
+                  size={16}
+                  css={{
+                    whiteSpace: 'pre-line',
+                    fontWeight: '500',
+                  }}
+                >
+                  Choose the right definition
+                </Text>
+                {isNotCorrect && (
+                  <Button
+                    onPress={handleNextButtonPress}
+                    size={'sm'}
+                    color={'warning'}
+                  >
+                    Continue
+                  </Button>
+                )}
+              </div>
+                <Grid.Container gap={2}>
+                  {listAnswer.map((item, index) => (
+                    <Grid xs={6} key={index}>
+                      <Card
+                        isPressable={selectAnswer === undefined}
+                        variant={'bordered'}
+                        borderWeight={'normal'}
+                        css={
+                          selectAnswer === undefined
+                            ? { cursor: 'pointer' }
+                            : selectAnswer === item &&
+                              selectAnswer ===
+                              listLearning[
+                                indexSelectQuestion
+                              ].answer
+                              ? styleCardCorrect
+                              : selectAnswer === item &&
+                                selectAnswer !==
+                                listLearning[
+                                  indexSelectQuestion
+                                ].answer
+                                ? styleCardIncorrect
+                                : item ===
+                                  listLearning[
+                                    indexSelectQuestion
+                                  ].answer
+                                  ? styleCardCorrect
+                                  : { cursor: 'pointer' }
+                        }
+                        onPress={() => handleCardAnswerPress(item)}
+                      >
+                        <Card.Body>
+                          <div className={classes.ans}>
+                            <Text className={classes.keyAns}>{index + 1}</Text>
+                            <Text>{item}</Text>
+                          </div>
+                        </Card.Body>
+                      </Card>
+                    </Grid>
+                  ))}
+                </Grid.Container>
+              </>
+              )}
           </Card.Body>
         </Card>
       </Fragment>
     </div>
   );
 }
+
+export default Learning

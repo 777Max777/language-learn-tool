@@ -6,7 +6,7 @@ import NotFoundScreen from './screens/NotFoundScreen';
 import DetailCourseScreen from './screens/DetailCourseScreen';
 import LearnScreen from './screens/LearnScreen';
 import ExamScreen from './screens/ExamScreen';
-import {ListeningScreen} from './screens/LearnScreen';
+import {ListeningScreen, LearningScreen} from './screens/LearnScreen';
 import LearnPmgScreen from './screens/LearnPmgScreen';
 import ExamScreenPmg from './screens/ExamPmgScreen';
 import MessageScreen from './screens/MessageScreen';
@@ -37,7 +37,7 @@ function App() {
         />
         <Route
           path={'/learn/:id'}
-          element={<LearnScreen title={'Learn course'} />}
+          element={<LearningScreen title={'Learn course'} />}
         />
         <Route
           path={'/listening/:id'}
