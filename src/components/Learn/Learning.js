@@ -75,6 +75,7 @@ const Learning = () => {
   useEffect(() => {
     const unlearned = listAllQuestion.filter(item => item.learned === false)
     if (unlearned.length === 0) {
+      updateListLocalStorage();
       navigate('/course/' + id);
     }
   }, [listAllQuestion])
@@ -93,7 +94,7 @@ const Learning = () => {
 
     const totalL = learned.length;
 
-    setNumberLearning((listAllQuestion.length * totalL) / 100 );
+    setNumberLearning((listAllQuestion.length * totalL) / 100);
   }, [selectAnswer, listAllQuestion]);
 
   // function and handler
@@ -182,8 +183,10 @@ const Learning = () => {
       setCloneListLearning([])
       updateListLocalStorage();
     } else if (listLearning.length - 1 == 0) {
-      const unlearned = listAllQuestion.filter(item => item.learned === false && !item.isWatched)
-      //console.log(listAllQuestion)
+      let unlearned = listAllQuestion.filter(item => item.learned === false && !item.isWatched)
+      if (unlearned.length == 0) {
+        unlearned = listAllQuestion.filter(item => item.learned === false)
+      }
       const random = Math.floor(Math.random() * unlearned.length);
       //console.log([unlearned[random]])
       setListLearning([unlearned[random]]);
