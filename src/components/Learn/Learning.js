@@ -183,7 +183,7 @@ const Learning = () => {
       }
       setTimeout(() => {
         updateBatches()
-        if (listLearning[indexSelectQuestion].count == 2 ) {
+        if (listLearning[indexSelectQuestion].count == 2) {
           listLearning[indexSelectQuestion].isTested = true
         }
       }, 500)
@@ -269,7 +269,7 @@ const Learning = () => {
         }, 1000);
       } else {
         listLearning[indexSelectQuestion].lastIncorrect = true;
-        listLearning[indexSelectQuestion].writtenCount = 0;
+
         setIsNotCorrect(true);
         seIsAlmostCorrectWord(true)
       }
@@ -312,6 +312,7 @@ const Learning = () => {
   const handleInputNextButtonPress = () => {
     listLearning[indexSelectQuestion].lastIncorrectClone =
       listLearning[indexSelectQuestion].lastIncorrect;
+    listLearning[indexSelectQuestion].writtenCount = 0;
     setCloneListLearning(prev => {
       prev.push(listLearning[indexSelectQuestion])
       return prev
