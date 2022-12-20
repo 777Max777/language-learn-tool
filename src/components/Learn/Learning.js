@@ -1,12 +1,13 @@
 import {
   Button,
   Card,
+  Input,
   Grid,
   Spacer,
   Text,
   Progress,
 } from '@nextui-org/react';
-import { Fragment, useCallback, useEffect, useState } from 'react';
+import { Fragment, useCallback, useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { MdKeyboardBackspace } from 'react-icons/md';
 import classes from './Learn.module.css';
@@ -35,6 +36,7 @@ const Learning = () => {
       item.isWatched = false
       item.count = 0
       item.writtenCount = 0
+      item.isTested = false
       return item
     })
   );
@@ -47,9 +49,12 @@ const Learning = () => {
   const [indexSelectQuestion, setIndexSelectQuestion] = useState(0);
   const [listAnswer, setListAnswer] = useState([]);
 
+  const [isShowRightAnswer, setShowIsRightAnswer] = useState(false);
+  const [isAlmostCorrectWord, seIsAlmostCorrectWord] = useState(false);
+  const answerRef = useRef()
+
   useEffect(() => {
     const unlearned = listAllQuestion.filter(item => item.learned === false)
-
     if (unlearned.length === 0) {
       navigate('/course/' + id);
     }
@@ -57,7 +62,6 @@ const Learning = () => {
     setTotalAnswer(
       listAllQuestion.filter((item) => item.learned === true).length
     );
-    const learned = listAllQuestion.filter(item => item.learned === true)
     setListLearning([unlearned[random]]);
     setListAllQuestion(prev => prev.map(item => {
       if (item.i === unlearned[random].i)
@@ -91,11 +95,15 @@ const Learning = () => {
 
   useEffect(() => {
     const learned = listAllQuestion.filter(item => item.learned === true)
-
     const totalL = learned.length;
 
     setNumberLearning((listAllQuestion.length * totalL) / 100);
   }, [selectAnswer, listAllQuestion]);
+
+  const clearField = () => {
+    answerRef.current.value = ''
+    answerRef.current.focus()
+  }
 
   // function and handler
   const generateAnswer = (answer) => {
@@ -146,30 +154,38 @@ const Learning = () => {
 
       listLearning[indexSelectQuestion].lastIncorrectClone =
         listLearning[indexSelectQuestion].lastIncorrect;
+
       /*if (indexSelectQuestion !== listLearning.length - 1) {
         setIndexSelectQuestion(indexSelectQuestion + 1);
       } else {
         repeatListLearning();
       }*/
+
+
       if (listLearning[indexSelectQuestion].count < 2) {
         setCloneListLearning(prev => {
-          console.log(`prev`)
-          console.log(prev)
           prev.push(listLearning[indexSelectQuestion])
           return prev
         })
       } else {
-        console.log('Выучил слово')
         setListAllQuestion(prev => prev.map(item => {
           if (item.i === listLearning[indexSelectQuestion].i) {
-            item.learned = true
+            //item.learned = true
             console.log(item)
+            return listLearning[indexSelectQuestion]
           }
           return item
         }))
+        setCloneListLearning(prev => {
+          prev.push(listLearning[indexSelectQuestion])
+          return prev
+        })
       }
       setTimeout(() => {
         updateBatches()
+        if (listLearning[indexSelectQuestion].count == 2 ) {
+          listLearning[indexSelectQuestion].isTested = true
+        }
       }, 500)
     } else {
       listLearning[indexSelectQuestion].lastIncorrect = true;
@@ -188,7 +204,132 @@ const Learning = () => {
         unlearned = listAllQuestion.filter(item => item.learned === false)
       }
       const random = Math.floor(Math.random() * unlearned.length);
-      //console.log([unlearned[random]])
+      setListLearning([unlearned[random]]);
+      setListAllQuestion(prev => prev.map(item => {
+        if (item.i === unlearned[random].i)
+          item.isWatched = true
+        return item
+      }))
+    } else {
+      setListLearning(prev => prev.slice(1))
+    }
+  }, [cloneListLearning, listLearning, listAllQuestion])
+
+  const handleNextButtonPress = () => {
+    listLearning[indexSelectQuestion].lastIncorrectClone =
+      listLearning[indexSelectQuestion].lastIncorrect;
+    setCloneListLearning(prev => {
+      prev.push(listLearning[indexSelectQuestion])
+      return prev
+    })
+    updateBatches();
+  };
+
+  const handleKeyDown = useCallback((event) => {
+    if (answerRef.current.value
+      && answerRef.current.value.length > 0
+      && event.key === 'Enter') {
+      isNotCorrect && handleInputNextButtonPress()
+      setSelectAnswer(answerRef.current.value);
+
+      if (
+        answerRef.current.value.toLowerCase() ===
+        listLearning[indexSelectQuestion].answer.toLowerCase()
+      ) {
+        listLearning[indexSelectQuestion].writtenCount =
+          listLearning[indexSelectQuestion].writtenCount + 1;
+        listLearning[indexSelectQuestion].lastIncorrect = undefined;
+
+        setShowIsRightAnswer(true)
+
+        listLearning[indexSelectQuestion].lastIncorrectClone =
+          listLearning[indexSelectQuestion].lastIncorrect;
+
+        if (listLearning[indexSelectQuestion].writtenCount < 2) {
+          setCloneListLearning(prev => {
+            console.log(`prev`)
+            console.log(prev)
+            prev.push(listLearning[indexSelectQuestion])
+            return prev
+          })
+        } else {
+          console.log('Выучил слово')
+          setListAllQuestion(prev => prev.map(item => {
+            if (item.i === listLearning[indexSelectQuestion].i) {
+              item.learned = true
+              console.log(item)
+            }
+            return item
+          }))
+        }
+        setTimeout(() => {
+          updateInputBatches()
+          setShowIsRightAnswer(false)
+          clearField()
+        }, 1000);
+      } else {
+        listLearning[indexSelectQuestion].lastIncorrect = true;
+        setIsNotCorrect(true);
+        seIsAlmostCorrectWord(true)
+      }
+    }
+  }, [listLearning, isNotCorrect, indexSelectQuestion])
+
+  const handleRightAnswer = useCallback(() => {
+    listLearning[indexSelectQuestion].writtenCount =
+      listLearning[indexSelectQuestion].writtenCount + 1;
+    listLearning[indexSelectQuestion].lastIncorrect = undefined;
+
+    listLearning[indexSelectQuestion].lastIncorrectClone =
+      listLearning[indexSelectQuestion].lastIncorrect;
+    if (listLearning[indexSelectQuestion].writtenCount < 2) {
+      setCloneListLearning(prev => {
+        console.log(`prev`)
+        console.log(prev)
+        prev.push(listLearning[indexSelectQuestion])
+        return prev
+      })
+    } else {
+      console.log('Выучил слово')
+      setListAllQuestion(prev => prev.map(item => {
+        if (item.i === listLearning[indexSelectQuestion].i) {
+          item.learned = true
+          console.log(item)
+        }
+        return item
+      }))
+    }
+
+    setTimeout(() => {
+      updateInputBatches()
+      setIsNotCorrect(false);
+      seIsAlmostCorrectWord(false)
+      clearField()
+    }, 1000);
+  }, [listLearning, indexSelectQuestion])
+
+  const handleInputNextButtonPress = () => {
+    listLearning[indexSelectQuestion].lastIncorrectClone =
+      listLearning[indexSelectQuestion].lastIncorrect;
+    setCloneListLearning(prev => {
+      prev.push(listLearning[indexSelectQuestion])
+      return prev
+    })
+    updateInputBatches();
+    clearField()
+  };
+
+  const updateInputBatches = useCallback(() => {
+    if (cloneListLearning.length == 3 && listLearning.length - 1 == 0) {
+      setListLearning(cloneListLearning)
+      setCloneListLearning([])
+      updateListLocalStorage();
+    } else if (listLearning.length - 1 == 0) {
+      let unlearned = listAllQuestion.filter(item => item.learned === false && item.count == 2)
+      if (unlearned.length == 0) {
+        unlearned = listAllQuestion.filter(item => item.learned === false)
+      }
+      const random = Math.floor(Math.random() * unlearned.length);
       setListLearning([unlearned[random]]);
       setListAllQuestion(prev => prev.map(item => {
         if (item.i === unlearned[random].i)
@@ -200,33 +341,6 @@ const Learning = () => {
       setListLearning(prev => prev.slice(1))
     }
   }, [cloneListLearning, listLearning, listAllQuestion])
-
-  const handleNextButtonPress = () => {
-    listLearning[indexSelectQuestion].lastIncorrectClone =
-      listLearning[indexSelectQuestion].lastIncorrect;
-    /*if (indexSelectQuestion !== listLearning.length - 1) {
-      setIndexSelectQuestion(indexSelectQuestion + 1);
-    } else {
-      repeatListLearning();
-    }*/
-    setCloneListLearning(prev => {
-      prev.push(listLearning[indexSelectQuestion])
-      return prev
-    })
-    updateBatches();
-  };
-
-  const repeatListLearning = () => {
-    const t = listLearning.filter((item) => {
-      return item.count <= 1;
-    });
-    if (t.length === 0) {
-      updateListLocalStorage();
-    } else {
-      setListLearning(t);
-      setIndexSelectQuestion(0);
-    }
-  };
 
   const progress = ((totalAnswer / listAllQuestion.length) * 100).toFixed(2);
 
@@ -341,6 +455,8 @@ const Learning = () => {
             </Text>
             <Spacer y={2} />
             {listLearning[indexSelectQuestion] &&
+              //listLearning[indexSelectQuestion].count < 2 &&
+              !listLearning[indexSelectQuestion].isTested &&
               (<><div className={classes.nextButton}>
                 <Text
                   size={16}
@@ -404,10 +520,84 @@ const Learning = () => {
                 </Grid.Container>
               </>
               )}
+            {listLearning[indexSelectQuestion] &&
+              //listLearning[indexSelectQuestion].count == 2 &&
+              listLearning[indexSelectQuestion].isTested &&
+              (<>
+                <div className={classes.nextButton}>
+                  <Text
+                    size={16}
+                    css={{
+                      whiteSpace: 'pre-line',
+                      fontWeight: '500',
+                    }}
+                  >
+                    Type definition
+                  </Text>
+                  {isNotCorrect && (
+                    <>
+                      <Text
+                        size={16}
+                        css={{
+                          whiteSpace: 'pre-line',
+                          fontWeight: '500',
+                        }}
+                        color={'primary'}
+                      >
+                        Correct is: "{
+                          listLearning[indexSelectQuestion].answer
+                            .split('')
+                            .map((item, index) => {
+                              if (index <= answerRef.current.value.length - 1
+                                && answerRef.current.value.charAt(index).toLowerCase() != item) {
+                                return <u><font color='red'>{item}</font></u>
+                              } else {
+                                return item
+                              }
+                            })}"
+                      </Text>
+                      {isAlmostCorrectWord && (
+                        <Button
+                          onPress={handleRightAnswer}
+                          size={'sm'}
+                          color={'secondary'}
+                        >
+                          Choose your right answer
+                        </Button>
+                      )}
+                      <Button
+                        onPress={handleInputNextButtonPress}
+                        size={'sm'}
+                        color={'warning'}
+                      >
+                        Continue
+                      </Button>
+                    </>
+                  )}
+                  {isShowRightAnswer && (
+                    <Text
+                      size={16}
+                      css={{
+                        whiteSpace: 'pre-line',
+                        fontWeight: '500',
+                      }}
+                      color={'green'}
+                    >
+                      it's right
+                    </Text>
+                  )}
+                </div>
+                <Input
+                  css={{ width: '100%' }}
+                  onKeyDown={handleKeyDown}
+                  ref={answerRef}
+                />
+              </>
+              )}
           </Card.Body>
         </Card>
       </Fragment>
-    </div>
+    </div >
   );
 }
 
