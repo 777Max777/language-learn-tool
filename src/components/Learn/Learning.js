@@ -269,6 +269,7 @@ const Learning = () => {
         }, 1000);
       } else {
         listLearning[indexSelectQuestion].lastIncorrect = true;
+        listLearning[indexSelectQuestion].writtenCount = 0;
         setIsNotCorrect(true);
         seIsAlmostCorrectWord(true)
       }
