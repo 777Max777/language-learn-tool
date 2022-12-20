@@ -325,10 +325,10 @@ const Learning = () => {
       setCloneListLearning([])
       updateListLocalStorage();
     } else if (listLearning.length - 1 == 0) {
-      let unlearned = listAllQuestion.filter(item => item.learned === false && item.count == 2)
-      if (unlearned.length == 0) {
+      let unlearned = listAllQuestion.filter(item => item.learned === false)
+      /*if (unlearned.length == 0) {
         unlearned = listAllQuestion.filter(item => item.learned === false)
-      }
+      }*/
       const random = Math.floor(Math.random() * unlearned.length);
       setListLearning([unlearned[random]]);
       setListAllQuestion(prev => prev.map(item => {
