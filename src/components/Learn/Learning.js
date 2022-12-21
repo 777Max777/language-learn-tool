@@ -194,7 +194,7 @@ const Learning = () => {
   }
 
   const updateBatches = useCallback(() => {
-    if (cloneListLearning.length == 3 && listLearning.length - 1 == 0) {
+    if (cloneListLearning.length == 10 && listLearning.length - 1 == 0) {
       setListLearning(cloneListLearning)
       setCloneListLearning([])
       updateListLocalStorage();
@@ -322,7 +322,7 @@ const Learning = () => {
   };
 
   const updateInputBatches = useCallback(() => {
-    if (cloneListLearning.length == 3 && listLearning.length - 1 == 0) {
+    if (cloneListLearning.length == 10 && listLearning.length - 1 == 0) {
       setListLearning(cloneListLearning)
       setCloneListLearning([])
       updateListLocalStorage();
