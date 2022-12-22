@@ -11,6 +11,7 @@ import { Fragment, useCallback, useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { MdKeyboardBackspace } from 'react-icons/md';
 import classes from './Learn.module.css';
+import Analyze from '../Analyze/Analyze'
 import ReactGA from 'react-ga4';
 
 const styleCardCorrect = {
@@ -194,7 +195,7 @@ const Learning = () => {
   }
 
   const updateBatches = useCallback(() => {
-    if (cloneListLearning.length == 10 && listLearning.length - 1 == 0) {
+    if (cloneListLearning.length == 3 && listLearning.length - 1 == 0) {
       setListLearning(cloneListLearning)
       setCloneListLearning([])
       updateListLocalStorage();
@@ -322,7 +323,7 @@ const Learning = () => {
   };
 
   const updateInputBatches = useCallback(() => {
-    if (cloneListLearning.length == 10 && listLearning.length - 1 == 0) {
+    if (cloneListLearning.length == 3 && listLearning.length - 1 == 0) {
       setListLearning(cloneListLearning)
       setCloneListLearning([])
       updateListLocalStorage();
@@ -344,51 +345,11 @@ const Learning = () => {
     }
   }, [cloneListLearning, listLearning, listAllQuestion])
 
-  const progress = ((totalAnswer / listAllQuestion.length) * 100).toFixed(2);
-
   return (
     <div className={classes.main}>
-      <div className={classes.progress}>
-        <Card>
-          <Card.Body>
-            <Text
-              p
-              b
-              size={12}
-              css={{
-                width: '100%',
-                textAlign: 'center',
-              }}
-            >
-              Analyzing your progress
-            </Text>
-            <Spacer y={1} />
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-              }}
-            >
-              <Text p b size={12}>
-                Total: {totalAnswer}/{listAllQuestion.length}
-              </Text>
-              <Text p b size={12}>
-                {progress} %
-              </Text>
-            </div>
-            <Progress
-              squared="true"
-              size="xs"
-              value={progress}
-              shadow
-              color={
-                progress >= 90 ? 'success' : progress > 0 ? 'warning' : 'error'
-              }
-              status="primary"
-            />
-          </Card.Body>
-        </Card>
-      </div>
+      <Analyze
+        totalAnswers={totalAnswer}
+        allQuestions={listAllQuestion.length} />
       <Progress
         css={{
           position: 'fixed',
