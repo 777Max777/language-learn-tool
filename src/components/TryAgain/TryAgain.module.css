@@ -1,0 +1,6 @@
+.headerQuestionNumber {
+    display    : flex;
+    align-items: center;
+    padding    : 4px 20px;
+    column-gap : 20px;
+}
