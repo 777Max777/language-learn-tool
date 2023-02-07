@@ -15,6 +15,15 @@ import Analyze from "../Analyze/Analyze";
 import ManageProcess from "../EducationManagement/ManageProcess";
 import ReactGA from "react-ga4";
 
+const shuffleArray = array => {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const temp = array[i];
+    array[i] = array[j];
+    array[j] = temp;
+  }
+}
+
 const Learning = () => {
   // init react-router-dom
   const { id } = useParams();
@@ -61,6 +70,7 @@ const Learning = () => {
       })
     );
     setIndexSelectQuestion(0);
+    batchSizeRef.current.value = 7
     ReactGA.event({
       category: "Learning",
       action:
@@ -184,6 +194,7 @@ const Learning = () => {
 
   const updateBatches = useCallback(() => {
     if (cloneListLearning.length == batchSizeRef.current.value && listLearning.length - 1 == 0) {
+      isShuffled && shuffleArray(cloneListLearning)
       setListLearning(cloneListLearning);
       setCloneListLearning([]);
       updateListLocalStorage();
@@ -324,6 +335,7 @@ const Learning = () => {
 
   const updateInputBatches = useCallback(() => {
     if (cloneListLearning.length == batchSizeRef.current.value && listLearning.length - 1 == 0) {
+      isShuffled && shuffleArray(cloneListLearning)
       setListLearning(cloneListLearning);
       setCloneListLearning([]);
       updateListLocalStorage();
