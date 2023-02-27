@@ -348,7 +348,7 @@ const Learning = () => {
       setListLearning([unlearned[random]]);
       setListAllQuestion((prev) =>
         prev.map((item) => {
-          if (item.i === unlearned[random].i) item.isWatched = true;
+          if (item.i === unlearned[random].i) item.isWatched = true; //лишнее
           return item;
         })
       );
