@@ -1,7 +1,9 @@
 import { useRef, useReducer, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
+//----------------------------------------------------------------
 const learnedCondition = (item) => item.learned === true
+//-----------------------------------------------------------------
 const getUnWatched = (questions) => {
   const unWatched = questions.filter(item => !item.isWatched)
   if (unWatched.length == 0) {
@@ -9,6 +11,13 @@ const getUnWatched = (questions) => {
   }
   return unWatched.filter((item) => !learnedCondition(item))
 }
+//найти РАНДОМНО новый термин из неусвоенных ранее
+const getRandomUnWatchedTerm = (questions) => {
+  const unWatched = getUnWatched(questions)
+  const random = Math.floor(Math.random() * unWatched.length);
+  return unWatched[random]
+}
+//------------------------------------------------------------------
 
 function initStates(allQuestions) {
   const unlearned = allQuestions.filter((item) => !learnedCondition(item));
@@ -93,15 +102,18 @@ const reducer = (state, action) => {
         totalAnswer: state.listAllQuestion.filter(learnedCondition).length
       }
     }
-    //добавляем РАНДОМНО новый термин из неусвоенных ранее
-    case 'ADD_TERM_TO_BATCH': {
-      const random = Math.floor(Math.random() * action.terms.length);
+    case 'SET_WORKING_BATCH': {
       return {
         ...state,
-        listLearning: [action.terms[random]],
+        listLearning: action.terms
+      }
+    }
+    case 'SET_TERM_WATCHED': {
+      return {
+        ...state,
         listAllQuestion: state.listAllQuestion.map(
           (item) => {
-            if (item.i === unlearned[random].i) item.isWatched = true;
+            if (item.i === action.term.i) item.isWatched = true;
             return item;
           })
       }
@@ -136,12 +148,14 @@ const useLearning = () => {
     if (state.cloneListLearning.length == batchSizeRef.current.value
       && state.listLearning.length - 1 == 0) {
       dispatch({ type: 'RESET_BUFFER_BATCH' })
+      updateLocalStorage(id)
     }
     //если рабочая пачку пустая, то нужно добавить новое слово,
     //которое не было просмотрено и соответственно не было выучено ранее
     else if (state.listLearning.length - 1 == 0) {
-      const unWatched = getUnWatched(state.listAllQuestion)
-      dispatch({ type: 'ADD_TERM_TO_BATCH', terms: unWatched })
+      const newTerm = getRandomUnWatchedTerm(state.listAllQuestion)
+      dispatch({ type: 'SET_TERM_WATCHED', term: newTerm })
+      dispatch({ type: 'SET_WORKING_BATCH', terms: [newTerm] })
     }
     //убираем из рабочей пачки термин на который был получен ответ, 
     //т.к. даже если этот термин не был усвоен, то он попадёт на следующей итерации в
