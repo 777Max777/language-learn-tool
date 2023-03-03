@@ -126,15 +126,6 @@ const reducer = (state, action) => {
         listLearning: data.terms,
       };
     }
-    case "SET_TERM_WATCHED": {
-      return {
-        ...state,
-        listAllQuestion: state.listAllQuestion.map((item) => {
-          if (item.i === data.term.i) item.isWatched = true;
-          return item;
-        }),
-      };
-    }
     case "REMOVE_ANSWERED_TERM": {
       return {
         ...state,
@@ -160,19 +151,21 @@ const reducer = (state, action) => {
         ...state,
         selectAnswer: undefined,
         isNotCorrect: false,
+        isShowRightAnswer: false
       };
     }
     case "SET_INCORRECT_TERM_FLAG": {
       return {
         ...state,
         selectAnswer: data.answer ? data.answer : state.selectAnswer,
-        isNotCorrect: true,
+        isNotCorrect: true
       };
     }
     case "SET_CORRECT_TERM_FLAG": {
       return {
         ...state,
-        selectAnswer: data.answer,
+        selectAnswer: data.answer ? data.answer : state.selectAnswer,
+        isShowRightAnswer: data.isShowRightAnswer ? data.isShowRightAnswer : state.isShowRightAnswer
       };
     }
   }
@@ -193,9 +186,13 @@ const useLearning = () => {
     initStates
   );
   const batchSizeRef = useRef();
+  const answerRef = useRef();
   const curTerm = state.listLearning[0];
 
   const updateBatches = useCallback(() => {
+    const defaultSideStateActions = learnedCondition(curTerm)
+      ? undefined
+      : [ADD_TERM_TO_BUFFER(curTerm)]
     //Чтобы запомнить, нужно "отработать"(слух, письмо) термины рабочей пачки
     //несколько раз и без ошибок
     if (
@@ -204,24 +201,22 @@ const useLearning = () => {
     ) {
       dispatch({
         type: "RESET_BUFFER_BATCH",
-        payload: { sideStateActions: [() => ADD_TERM_TO_BUFFER(curTerm)] },
+        payload: { sideStateActions: defaultSideStateActions },
       });
       updateLocalStorage(id);
     }
     //если рабочая пачка пустая, то нужно добавить новое слово,
     //которое НЕ БЫЛО просмотрено и соответственно НЕ БЫЛО выучено ранее
     else if (state.listLearning.length - 1 == 0) {
-      //const newTerm = getRandomUnWatchedTerm(state.listAllQuestion);
-      //dispatch({ type: "SET_TERM_WATCHED", term: newTerm });
       const newTerm = getRandomUnlearnedTerm(
         state.listAllQuestion,
         state.cloneListLearning
       );
       dispatch({
         type: "SET_WORKING_BATCH",
-        payload: { 
+        payload: {
           data: { terms: [newTerm] },
-          sideStateActions: [() => ADD_TERM_TO_BUFFER(curTerm)]
+          sideStateActions: defaultSideStateActions
         },
       });
     }
@@ -231,7 +226,7 @@ const useLearning = () => {
     else {
       dispatch({
         type: "REMOVE_ANSWERED_TERM",
-        payload: { sideStateActions: [() => ADD_TERM_TO_BUFFER(curTerm)] }
+        payload: { sideStateActions: defaultSideStateActions }
       });
     }
   }, [state.cloneListLearning, state.listLearning, state.listAllQuestion]);
@@ -250,6 +245,7 @@ const useLearning = () => {
   };
 
   //------------------ACTIONS CONTROLLER-----------------------------------------
+
   useEffect(() => {
     if (curTerm.isTested) {
       dispatch({ type: "RESET_CORRECT_TERM_FLAG" });
@@ -264,6 +260,16 @@ const useLearning = () => {
       });
     }
   }, [state.listLearning]);
+
+  useEffect(() => {
+    const unlearned = state.listAllQuestion.filter(learnedCondition);
+    if (unlearned.length === 0) {
+      updateLocalStorage(id);
+      navigate("/course/" + id);
+    }
+  }, [state.listAllQuestion]);
+
+  //-------------------------TEST CONTROLLER----------------------------------------
 
   const handleCardAnswerPress = (key) => {
     if (key === curTerm.answer) {
@@ -282,12 +288,66 @@ const useLearning = () => {
       }, 500);
     } else {
       curTerm.lastIncorrect = true;
+      curTerm.lastIncorrectClone = true;
       dispatch({
         type: "SET_INCORRECT_TERM_FLAG",
         payload: { data: { answer: key } },
       });
     }
 
+    const handleNextButtonPress = () => {
+      updateBatches()
+    }
+    //-----------------------------------------------------------------------------------
+    //-------------------------WRITING CONTROLLER----------------------------------------
+    const handleKeyDown = event => {
+      if (
+        answerRef.current.value &&
+        answerRef.current.value.length > 0 &&
+        event.key === "Enter"
+      ) {
+        correctWordProcess()
+      } else {
+        curTerm.lastIncorrect = true;
+        curTerm.lastIncorrectClone = true
+        dispatch({ type: "SET_INCORRECT_TERM_FLAG" });
+      }
+    }
+
+    const correctWordProcess = () => {
+      curTerm.writtenCount++;
+      curTerm.lastIncorrect = undefined;
+      curTerm.lastIncorrectClone = undefined;
+      if (curTerm.writtenCount == 2) {
+        curTerm.learned = true;
+        refreshTermInQuestionList(curTerm)
+      }
+      dispatch({
+        type: "SET_CORRECT_TERM_FLAG",
+        payload: { data: { isShowRightAnswer: true } },
+      });
+      setTimeout(() => {
+        updateBatches();
+        clearField();
+      }, 1000);
+    }
+
+    const handleRightAnswer = () => {
+      correctWordProcess()
+    }
+
+    const handleInputNextButtonPress = () => {
+      curTerm.writtenCount = 0
+      updateBatches();
+      clearField();
+    }
+
+    const clearField = () => {
+      answerRef.current.value = "";
+      answerRef.current.focus();
+    };
+
+    //---------------------------------------------------------------------------------
 
   };
 };
