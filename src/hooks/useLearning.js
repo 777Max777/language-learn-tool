@@ -1,47 +1,29 @@
-import { useRef, useReducer, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-
+import { useRef, useReducer, useCallback, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { generateAnswer } from './actions/TestController'
+import reducer from './reducers/learn.reducer'
 //----------------------------------------------------------------
-const learnedCondition = (item) => item.learned === true;
-const isWatched = (bufferBatch, term) =>
-  bufferBatch.find((bufItem) => bufItem.i === term.i) != undefined;
-//-----------------------------------------------------------------
-const getUnWatched = (questions) => {
-  const unWatched = questions.filter((item) => !item.isWatched);
-  if (unWatched.length == 0) {
-    return questions.filter((item) => !learnedCondition(item));
-  }
-  return unWatched.filter((item) => !learnedCondition(item));
-};
-//найти РАНДОМНО новый термин из неусвоенных ранее
-const getRandomUnWatchedTerm = (questions) => {
-  const unWatched = getUnWatched(questions);
-  const random = Math.floor(Math.random() * unWatched.length);
-  return unWatched[random];
-};
+//чтобы исключить возможность попадания термина из уже изучаемых
+const isWatched = (batch, term) =>
+  batch.find((bufItem) => bufItem.i === term.i) != undefined;
 //------------------------------------------------------------------
-const getRandomUnlearnedTerm = (questions, bufferBatch) => {
-  const unlearned = questions.filter(
-    (item) => !learnedCondition(item) && !isWatched(bufferBatch, item)
-  ); //чтобы исключить возможность попадания термина из уже изучаемых
-
+const getRandomUnlearnedTerm = (questions, batches, learnedCondition) => {
+  let unlearned = questions.filter(
+    (item) => !learnedCondition(item) && !isWatched(batches, item)
+  );
+  if (unlearned.length == 0) {
+    unlearned = questions.filter(item => !learnedCondition(item))
+  }
   const random = Math.floor(Math.random() * unlearned.length);
   return unlearned[random];
 };
 
 const ADD_TERM_TO_BUFFER = term => state => state.cloneListLearning.push(term)
-
 //----------------------------------------------------------------------
 
-function initStates(allQuestions) {
+function initStates({ learnQuestions: allQuestions, learnedCondition }) {
   const unlearned = allQuestions.filter((item) => !learnedCondition(item));
   const random = Math.floor(Math.random() * unlearned.length);
-  //установим первый элемент из рабочей пачки как просмотренный
-  allQuestions.map((item) => {
-    if (item.i === unlearned[random].i) item.isWatched = true;
-    return item;
-  });
-
   return {
     listAllQuestion: allQuestions,
     totalAnswer: allQuestions.filter(learnedCondition).length,
@@ -49,144 +31,23 @@ function initStates(allQuestions) {
     cloneListLearning: [],
     isNotCorrect: false,
     numberLearning: 0,
+    batchSize: 7,
     selectAnswer: undefined,
-    listAnswer: generateAnswer(allQuestions, unlearned[random]),
+    listAnswer: generateAnswer(allQuestions, unlearned[random].answer),
     isShuffled: true,
     isShowRightAnswer: false,
   };
 }
 
-const generateAnswer = (listAllQuestion, answer) => {
-  const listAns = listAllQuestion.map((item) => item.answer.trim());
-  const a = listAns
-    .filter((item, index) => {
-      return listAns.indexOf(item) === index;
-    })
-    .sort(() => Math.random() - 0.5);
-
-  const b = [answer, ...a];
-  const result = b.filter((item, index) => {
-    return b.indexOf(item) === index;
-  });
-
-  const shuffled = result.slice(0, 4).sort(() => Math.random() - 0.5);
-  return shuffled;
-};
-
-const shuffleArray = (array) => {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    const temp = array[i];
-    array[i] = array[j];
-    array[j] = temp;
-  }
-};
-
-const updateLocalStorage = (id) => {
+const updateLocalStorage = (id, listAllQuestion) => {
   const temp = JSON.parse(localStorage.getItem(id));
   temp.data = listAllQuestion;
   localStorage.setItem(id, JSON.stringify(temp));
 };
 
-const updateListLocalStorage = () => {
-  listAllQuestion.forEach((element) => {
-    if (element.learned) {
-      delete element.count; // перенести в learned
-    }
-  });
-  updateLocalStorage(id);
-  setTotalAnswer(
-    JSON.parse(localStorage.getItem(id)).data.filter(
-      (item) => item.learned === true
-    ).length
-  );
-};
-
-const reducer = (state, action) => {
-  const sideStateActions = action.payload.sideStateActions;
-  if (sideStateActions && sideStateActions.length > 0) {
-    sideStateActions.forEach(fn => fn(state))
-  }
-  const data = action.payload.data;
-  switch (action.type) {
-    //устанавливаем новую рабочую пачку для изучения после предыдущей итерации обучения
-    //буферная пачка хранит неусвоенные ранее термины
-    case 'RESET_BUFFER_BATCH': {
-      state.isShuffled && shuffleArray(state.cloneListLearning)
-      return {
-        ...state,
-        listLearning: state.cloneListLearning,
-        cloneListLearning: [],
-        totalAnswer: state.listAllQuestion.filter(learnedCondition).length
-      };
-    }
-    case "SET_WORKING_BATCH": {
-      return {
-        ...state,
-        listLearning: data.terms,
-      };
-    }
-    case "REMOVE_ANSWERED_TERM": {
-      return {
-        ...state,
-        listLearning: state.listLearning.slice(1),
-      };
-    }
-    case "REFRESH_TERM": {
-      return {
-        ...state,
-        listAllQuestion: state.listAllQuestion.map(data.mapper),
-      };
-    }
-    case "UPDATE_CARD_ANSWERS": {
-      return {
-        ...state,
-        selectAnswer: undefined,
-        isNotCorrect: false,
-        listAnswer: data.answers ? data.answers : state.listAnswer,
-      };
-    }
-    case "RESET_CORRECT_TERM_FLAG": {
-      return {
-        ...state,
-        selectAnswer: undefined,
-        isNotCorrect: false,
-        isShowRightAnswer: false
-      };
-    }
-    case "SET_INCORRECT_TERM_FLAG": {
-      return {
-        ...state,
-        selectAnswer: data.answer ? data.answer : state.selectAnswer,
-        isNotCorrect: true
-      };
-    }
-    case "SET_CORRECT_TERM_FLAG": {
-      return {
-        ...state,
-        selectAnswer: data.answer ? data.answer : state.selectAnswer,
-        isShowRightAnswer: data.isShowRightAnswer ? data.isShowRightAnswer : state.isShowRightAnswer
-      };
-    }
-  }
-  return state;
-};
-
-const useLearning = () => {
-  const { id } = useParams();
-  const [state, dispatch] = useReducer(
-    reducer,
-    JSON.parse(localStorage.getItem(id)).data.map((item) => {
-      item.isWatched = false;
-      item.count = 0;
-      item.writtenCount = 0;
-      item.isTested = false;
-      return item;
-    }),
-    initStates
-  );
-  const batchSizeRef = useRef();
-  const answerRef = useRef();
+export default function useLearning(id, learnQuestions, learnedCondition) {
+  const navigate = useNavigate();
+  const [state, dispatch] = useReducer(reducer, { learnQuestions, learnedCondition }, initStates)
   const curTerm = state.listLearning[0];
 
   const updateBatches = useCallback(() => {
@@ -196,21 +57,26 @@ const useLearning = () => {
     //Чтобы запомнить, нужно "отработать"(слух, письмо) термины рабочей пачки
     //несколько раз и без ошибок
     if (
-      batchSizeRef.current.value == state.cloneListLearning.length + 1 &&
-      state.listLearning.length - 1 == 0
+      state.batchSize <= state.cloneListLearning.length + 1
+      && state.listLearning.length - 1 == 0
+      //&& state.batchSize != 1 
     ) {
       dispatch({
         type: "RESET_BUFFER_BATCH",
-        payload: { sideStateActions: defaultSideStateActions },
+        payload: {
+          sideStateActions: defaultSideStateActions,
+          data: { predicate: learnedCondition }
+        },
       });
-      updateLocalStorage(id);
+      updateLocalStorage(id, state.listAllQuestion);
     }
     //если рабочая пачка пустая, то нужно добавить новое слово,
     //которое НЕ БЫЛО просмотрено и соответственно НЕ БЫЛО выучено ранее
     else if (state.listLearning.length - 1 == 0) {
       const newTerm = getRandomUnlearnedTerm(
         state.listAllQuestion,
-        state.cloneListLearning
+        [...state.listLearning, ...state.cloneListLearning],
+        learnedCondition
       );
       dispatch({
         type: "SET_WORKING_BATCH",
@@ -240,114 +106,93 @@ const useLearning = () => {
     };
     dispatch({
       type: "REFRESH_TERM",
-      payload: { data: { mapper: refreshPredicate } },
+      payload: {
+        data: {
+          mapper: refreshPredicate,
+          predicate: learnedCondition
+        }
+      },
     });
   };
+
+  const setIsShuffled = () => {
+    dispatch({ type: 'CHANGE_SHUFFLED', payload: {} })
+  }
 
   //------------------ACTIONS CONTROLLER-----------------------------------------
 
   useEffect(() => {
-    if (curTerm.isTested) {
-      dispatch({ type: "RESET_CORRECT_TERM_FLAG" });
-    } else {
-      dispatch({
-        type: "UPDATE_CARD_ANSWERS",
-        payload: {
-          data: {
-            answers: generateAnswer(state.listAllQuestion, curTerm.answer),
-          },
-        },
-      });
-    }
-  }, [state.listLearning]);
-
-  useEffect(() => {
-    const unlearned = state.listAllQuestion.filter(learnedCondition);
+    const unlearned = state.listAllQuestion.filter((item) => !learnedCondition(item));
     if (unlearned.length === 0) {
-      updateLocalStorage(id);
+      updateLocalStorage(id, state.listAllQuestion);
       navigate("/course/" + id);
     }
   }, [state.listAllQuestion]);
 
-  //-------------------------TEST CONTROLLER----------------------------------------
-
-  const handleCardAnswerPress = (key) => {
-    if (key === curTerm.answer) {
-      curTerm.count++;
-      curTerm.lastIncorrect = undefined;
-      curTerm.lastIncorrectClone = undefined;
-      dispatch({
-        type: "SET_CORRECT_TERM_FLAG",
-        payload: { data: { answer: key } },
-      });
-      setTimeout(() => {
-        updateBatches();
-        if (curTemp.count == 2) {
-          curTemp.isTested = true;
+  const batchSizeChangeHandler = useCallback(changedSize => {
+    if (changedSize) {
+      const batchSize = state.batchSize
+      console.log('Batch size = ' + batchSize + ', changedSize = ' + changedSize)
+      const re = /^[0-9\b]+$/;
+      if (re.test(changedSize)) {
+        const newBatchSize = parseInt(changedSize)
+        if (newBatchSize != 0 && newBatchSize < batchSize) {
+          let bufferBatch, workingBatch
+          if (state.listLearning.length > newBatchSize) {
+            workingBatch = state.listLearning.splice(0, newBatchSize)
+          }
+          if (state.cloneListLearning.length > newBatchSize) {
+            bufferBatch = []
+          }
+          dispatch({
+            type: 'CHANGE_BATCHE_SIZE',
+            payload: {
+              data: {
+                batchSize: newBatchSize,
+                workingBatch: workingBatch,
+                bufferBatch: bufferBatch
+              }
+            }
+          })
+        } else if (newBatchSize != 0) {
+          dispatch({
+            type: 'CHANGE_BATCHE_SIZE',
+            payload: {
+              data: {
+                batchSize: newBatchSize
+              }
+            }
+          })
         }
-      }, 500);
+      }
+    }
+  }, [state.batchSize, state.listLearning, state.cloneListLearning])
+
+  useEffect(() => {
+    const workingBatch = state.listLearning.length
+    const bufferBatch = state.cloneListLearning.length
+
+    const fullAmount = state.batchSize
+    console.log('workingBatch = ', + workingBatch
+      + ', bufferBatch = ', + bufferBatch
+      + ', BufferSize = ' + fullAmount)
+    let batchProgress
+    if (workingBatch - 1 == 0
+      && bufferBatch < fullAmount) {
+      batchProgress = ((bufferBatch + workingBatch - 1) * 100) / fullAmount
     } else {
-      curTerm.lastIncorrect = true;
-      curTerm.lastIncorrectClone = true;
-      dispatch({
-        type: "SET_INCORRECT_TERM_FLAG",
-        payload: { data: { answer: key } },
-      });
+      batchProgress = ((fullAmount - workingBatch) * 100) / fullAmount
     }
+    dispatch({ type: 'SET_BATCH_NUMBER_PROGRESS', payload: { data: { progress: batchProgress } } })
+  }, [state.listLearning, state.cloneListLearning])
 
-    const handleNextButtonPress = () => {
-      updateBatches()
-    }
-    //-----------------------------------------------------------------------------------
-    //-------------------------WRITING CONTROLLER----------------------------------------
-    const handleKeyDown = event => {
-      if (
-        answerRef.current.value &&
-        answerRef.current.value.length > 0 &&
-        event.key === "Enter"
-      ) {
-        correctWordProcess()
-      } else {
-        curTerm.lastIncorrect = true;
-        curTerm.lastIncorrectClone = true
-        dispatch({ type: "SET_INCORRECT_TERM_FLAG" });
-      }
-    }
-
-    const correctWordProcess = () => {
-      curTerm.writtenCount++;
-      curTerm.lastIncorrect = undefined;
-      curTerm.lastIncorrectClone = undefined;
-      if (curTerm.writtenCount == 2) {
-        curTerm.learned = true;
-        refreshTermInQuestionList(curTerm)
-      }
-      dispatch({
-        type: "SET_CORRECT_TERM_FLAG",
-        payload: { data: { isShowRightAnswer: true } },
-      });
-      setTimeout(() => {
-        updateBatches();
-        clearField();
-      }, 1000);
-    }
-
-    const handleRightAnswer = () => {
-      correctWordProcess()
-    }
-
-    const handleInputNextButtonPress = () => {
-      curTerm.writtenCount = 0
-      updateBatches();
-      clearField();
-    }
-
-    const clearField = () => {
-      answerRef.current.value = "";
-      answerRef.current.focus();
-    };
-
-    //---------------------------------------------------------------------------------
-
-  };
-};
+  return {
+    setIsShuffled,
+    dispatch,
+    updateBatches,
+    refreshTermInQuestionList,
+    batchSizeChangeHandler,
+    curTerm,
+    state
+  }
+}

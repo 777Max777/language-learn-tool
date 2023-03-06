@@ -4,8 +4,11 @@ import {
   Text,
 } from '@nextui-org/react';
 import { MdKeyboardBackspace } from 'react-icons/md';
+import { useNavigate } from "react-router-dom";
 
-const HeaderEducation = ({navigate, id, quitEducateLabel}) => {
+
+const HeaderEducation = ({id, quitEducateLabel}) => {
+  const navigate = useNavigate();
   return (
     <Grid.Container>
       <Grid xs={2}>

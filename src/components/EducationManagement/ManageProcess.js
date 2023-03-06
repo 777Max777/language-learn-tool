@@ -1,5 +1,6 @@
 import { Card, Spacer, Text, Input, Checkbox } from "@nextui-org/react";
 import classes from "./EducationManagement.module.css";
+
 const styles = {
   content: {
     display: "flex",
@@ -10,7 +11,19 @@ const styles = {
     textAlign: "center",
   },
 };
-const ManageProcess = ({ batchSizeRef, isShuffled, setIsShuffled }) => {
+
+const ManageProcess = ({
+  batchSize,
+  isShuffled,
+  setIsShuffled,
+  batchSizeChangeHanler
+}) => {
+  const onChangeHandler = (event) => {
+    batchSizeChangeHanler(event.target.value)
+  }
+  const onClickInputHandler = (event) => {
+    event.target.select()
+  }
   return (
     <div className={classes.progress}>
       <Card>
@@ -23,9 +36,8 @@ const ManageProcess = ({ batchSizeRef, isShuffled, setIsShuffled }) => {
             <Text p b size={12}>
               Type batch size
             </Text>
-            <Input ref={batchSizeRef} />
+            <Input value={batchSize} onChange={onChangeHandler} onClick={onClickInputHandler}/>
           </div>
-
           <Spacer y={1} />
           <div style={styles.content}>
             <Checkbox

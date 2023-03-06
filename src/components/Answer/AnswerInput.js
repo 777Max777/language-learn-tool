@@ -10,7 +10,8 @@ const AnswerInput = (prop) => {
     <>
       <div className={classes.nextButton}>
         <LabelQuestion label={"Type definition"} />
-        {prop.isNotCorrect && (
+        {prop.isNotCorrect && 
+          prop.answerRef.current && (
           <>
             <ReviewLabel
               typedAnswer={prop.answerRef.current.value}
