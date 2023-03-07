@@ -7,7 +7,6 @@ import {
 import classes from './Analyze.module.css';
 
 const Analyze = ({totalAnswers, allQuestions}) => {
-  console.log('render Analyze')
   const progress = ((totalAnswers / allQuestions) * 100).toFixed(2);
   return (
     <div className={classes.progress}>

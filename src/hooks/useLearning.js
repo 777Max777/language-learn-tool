@@ -19,6 +19,14 @@ const getRandomUnlearnedTerm = (questions, batches, learnedCondition) => {
 };
 
 const ADD_TERM_TO_BUFFER = term => state => state.cloneListLearning.push(term)
+const ADD_UNLEARNED_TERM_TO_BUFFER = learnedCondition => state => {
+  const unlearned = state.listAllQuestion.filter(item => !learnedCondition(item))
+  if (unlearned && unlearned.length == 0) {
+    return undefined
+  }
+  const random = Math.floor(Math.random() * unlearned.length);
+  state.cloneListLearning.push(unlearned[random]);
+}
 //----------------------------------------------------------------------
 
 function initStates({ learnQuestions: allQuestions, learnedCondition }) {
@@ -52,7 +60,9 @@ export default function useLearning(id, learnQuestions, learnedCondition) {
 
   const updateBatches = useCallback(() => {
     const defaultSideStateActions = learnedCondition(curTerm)
-      ? undefined
+      ? state.cloneListLearning.length == 0 && state.listLearning.length - 1 == 0  //case to avoid batch size == 1
+        ? [ADD_UNLEARNED_TERM_TO_BUFFER(learnedCondition)]
+        : undefined
       : [ADD_TERM_TO_BUFFER(curTerm)]
     //Чтобы запомнить, нужно "отработать"(слух, письмо) термины рабочей пачки
     //несколько раз и без ошибок
@@ -95,7 +105,7 @@ export default function useLearning(id, learnQuestions, learnedCondition) {
         payload: { sideStateActions: defaultSideStateActions }
       });
     }
-  }, [state.cloneListLearning, state.listLearning, state.listAllQuestion]);
+  }, [state.cloneListLearning, state.listLearning, state.listAllQuestion, state.batchSize]);
 
   const refreshTermInQuestionList = (term) => {
     const refreshPredicate = (item) => {
@@ -141,7 +151,7 @@ export default function useLearning(id, learnQuestions, learnedCondition) {
           if (state.listLearning.length > newBatchSize) {
             workingBatch = state.listLearning.splice(0, newBatchSize)
           }
-          if (state.cloneListLearning.length > newBatchSize) {
+          if (state.cloneListLearning.length >= newBatchSize) {
             bufferBatch = []
           }
           dispatch({
