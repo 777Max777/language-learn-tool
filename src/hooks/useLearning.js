@@ -1,4 +1,4 @@
-import { useRef, useReducer, useCallback, useEffect } from "react";
+import { useReducer, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { generateAnswer } from './actions/TestController'
 import reducer from './reducers/learn.reducer'

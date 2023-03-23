@@ -1,36 +1,45 @@
-import { useRef } from 'react'
+import { useRef } from "react";
 
-const useWritingActions = (curTerm, dispatch, updateBatches, refreshTermInQuestionList) => {
+const useWritingActions = ({
+  curTerm,
+  dispatch,
+  updateBatches,
+  refreshTermInQuestionList,
+  learnedSetter
+}) => {
   const answerRef = useRef();
-  
-  const handleKeyDown = event => {
+
+  const handleKeyDown = (event) => {
     if (
       answerRef.current.value &&
       answerRef.current.value.length > 0 &&
       event.key === "Enter"
     ) {
       if (
-        answerRef.current.value.toLowerCase() ===
-        curTerm.answer.toLowerCase()
+        answerRef.current.value.toLowerCase() === curTerm.answer.toLowerCase()
       ) {
-        correctWordProcess()
+        correctWordProcess();
       } else {
         curTerm.lastIncorrect = true;
-        curTerm.lastIncorrectClone = true
+        curTerm.lastIncorrectClone = true;
         dispatch({ type: "SET_INCORRECT_TERM_FLAG", payload: {} });
       }
     }
-  }
+  };
 
   const correctWordProcess = () => {
     curTerm.writtenCount++;
     curTerm.lastIncorrect = undefined;
     curTerm.lastIncorrectClone = undefined;
     if (curTerm.writtenCount == 2) {
-      curTerm.learned = true;
-      delete curTerm.count
-      delete curTerm.writtenCount
-      refreshTermInQuestionList(curTerm)
+      if (learnedSetter) {
+        learnedSetter(curTerm);
+      } else {
+        curTerm.learned = true;
+      }
+      delete curTerm.count;
+      delete curTerm.writtenCount;
+      refreshTermInQuestionList(curTerm);
     }
     dispatch({
       type: "SET_CORRECT_TERM_FLAG",
@@ -40,17 +49,17 @@ const useWritingActions = (curTerm, dispatch, updateBatches, refreshTermInQuesti
       updateBatches();
       clearField();
     }, 1000);
-  }
+  };
 
   const handleRightAnswer = () => {
-    correctWordProcess()
-  }
+    correctWordProcess();
+  };
 
   const handleInputNextButtonPress = () => {
-    curTerm.writtenCount = 0
+    curTerm.writtenCount = 0;
     updateBatches();
     clearField();
-  }
+  };
 
   const clearField = () => {
     answerRef.current.value = "";
@@ -58,11 +67,11 @@ const useWritingActions = (curTerm, dispatch, updateBatches, refreshTermInQuesti
   };
 
   return {
-    handleKeyDown, 
-    handleRightAnswer, 
-    handleInputNextButtonPress, 
-    answerRef
-  }
-}
+    handleKeyDown,
+    handleRightAnswer,
+    handleInputNextButtonPress,
+    answerRef,
+  };
+};
 
-export default useWritingActions
+export default useWritingActions;

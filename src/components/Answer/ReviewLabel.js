@@ -17,7 +17,7 @@ const ReviewLabel = ({ typedAnswer, rightAnswer }) => {
           typedAnswer.charAt(index).toLowerCase() != item
         ) {
           return (
-            <u>
+            <u key={index}>
               <font color="red">{item}</font>
             </u>
           );
