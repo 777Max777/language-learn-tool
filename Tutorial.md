@@ -19,7 +19,7 @@
 - Step 4: Click "Create module" option in main menu.
 
 <div style='text-align: center'>
-  <img width='60%' src='./image-github/image3.png'>
+  <img width='60%' src='./image-github/Image3.png'>
 </div>
 
 - Step 5: Paste text from clipboard to textarea and input module name.
