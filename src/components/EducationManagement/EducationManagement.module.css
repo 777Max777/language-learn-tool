@@ -3,5 +3,6 @@
     top: 150px;
     right: 20px;
     width: 250px;
+    z-index: 999999999999;
     transition: all 0.5s ease-in-out;
 }
