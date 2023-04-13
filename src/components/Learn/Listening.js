@@ -5,7 +5,7 @@ import { useParams } from "react-router-dom";
 import HeaderEducation from "../HeaderEducation/HeaderEducation";
 import LetsTryAgain from "../TryAgain/TryAgain";
 import AnswerInput from "../Answer/AnswerInput";
-import ManageProcess from "../EducationManagement/ManageProcess";
+import { ManageDetailProcess } from "../EducationManagement/ManageProcess";
 import useWritingActions from "../../hooks/actions/WritingController";
 import useLearning from "../../hooks/useLearning";
 import Analyze from "../Analyze/Analyze";
@@ -74,7 +74,7 @@ const Listening = () => {
         totalAnswers={state.totalAnswer}
         allQuestions={state.listAllQuestion.length}
       />
-      <ManageProcess
+      <ManageDetailProcess
         batchSize={state.batchSize}
         batchSizeChangeHanler={batchSizeChangeHandler}
         isShuffled={state.isShuffled}
@@ -94,7 +94,7 @@ const Listening = () => {
         status="primary"
       />
       <Fragment>
-        <HeaderEducation id={id} quitEducateLabel={"Quit listening"} />
+        <HeaderEducation id={id} quitEducateLabel={"Quit listening"} trainType={'Listen'} />
         <Spacer y={2} />
         <Card>
           <Card.Body>

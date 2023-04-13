@@ -8,7 +8,7 @@ import ContentQuestion from "../Question/ContentQuestion";
 import AnswerChoice from "../Answer/AnswerChoice";
 import AnswerInput from "../Answer/AnswerInput";
 import Analyze from "../Analyze/Analyze";
-import ManageProcess from "../EducationManagement/ManageProcess";
+import ManageBatches from "../EducationManagement/ManageProcess";
 import useTestActions, {
   generateAnswer,
 } from "../../hooks/actions/TestController";
@@ -82,7 +82,7 @@ const Learning = () => {
         totalAnswers={state.totalAnswer}
         allQuestions={state.listAllQuestion.length}
       />
-      <ManageProcess
+      <ManageBatches
         batchSize={state.batchSize}
         batchSizeChangeHanler={batchSizeChangeHandler}
         isShuffled={state.isShuffled}
@@ -102,7 +102,7 @@ const Learning = () => {
         status="primary"
       />
       <Fragment>
-        <HeaderEducation id={id} quitEducateLabel={"Quit learn"} />
+        <HeaderEducation id={id} quitEducateLabel={"Quit learn"} trainType={'Learn'} />
         <Spacer y={2} />
         <Card>
           <Card.Body>

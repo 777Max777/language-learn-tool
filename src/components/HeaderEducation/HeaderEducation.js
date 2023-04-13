@@ -7,7 +7,7 @@ import { MdKeyboardBackspace } from 'react-icons/md';
 import { useNavigate } from "react-router-dom";
 
 
-const HeaderEducation = ({id, quitEducateLabel}) => {
+const HeaderEducation = ({id, quitEducateLabel, trainType}) => {
   const navigate = useNavigate();
   return (
     <Grid.Container>
@@ -27,7 +27,7 @@ const HeaderEducation = ({id, quitEducateLabel}) => {
       </Grid>
       <Grid xs={8}>
         <Text css={{ textAlign: "center", width: "100%" }} h1 size={18}>
-          Learn: {JSON.parse(localStorage.getItem(id)).name}
+          {trainType}: {JSON.parse(localStorage.getItem(id)).name}
         </Text>
       </Grid>
     </Grid.Container>
