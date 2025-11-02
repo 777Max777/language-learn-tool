@@ -123,6 +123,10 @@ const DetailCourse = () => {
     navigate('/');
   };
 
+  const handleEdit = () => {
+    navigate(`/edit/course/${id}`);
+  };
+
   const handleButtonLearnPress = () => {
     const temp1 = JSON.parse(localStorage.getItem(id));
     if (course.filter((item) => item.learned === false).length === 0) {
@@ -443,6 +447,9 @@ const DetailCourse = () => {
               css={{ $$dropdownMenuWidth: '280px' }}
               onAction={(e) => {
                 switch (e) {
+                  case 'Edit':
+                    handleEdit();
+                    break;
                   case 'Learn':
                     handleButtonLearnPress();
                     break;
@@ -478,6 +485,14 @@ const DetailCourse = () => {
               }}
             >
               <Dropdown.Section title={'Actions'}>
+                <Dropdown.Item
+                  key="Edit"
+                  description="Progress will be reset"
+                  color="warning"
+                  icon={<FcSynchronize size={20} />}
+                >
+                  Edit course
+                </Dropdown.Item>
                 <Dropdown.Item
                   key="Learn"
                   description="Learn course multiple choice"

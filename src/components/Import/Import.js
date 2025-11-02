@@ -11,12 +11,12 @@ import {
 } from '@nextui-org/react';
 import { useRef, useState } from 'react';
 import { nanoid } from 'nanoid';
-import classes from './Create.module.css';
+import classes from './Import.module.css';
 import { MdKeyboardBackspace } from 'react-icons/md';
 import { BsFillQuestionCircleFill } from 'react-icons/bs';
 import { useNavigate } from 'react-router-dom';
 
-const Create = () => {
+const Import = () => {
   const [isValidName, setIsValidName] = useState(true);
   const [isValidContent, setIsValidContent] = useState(true);
   const [firstExtract, setFirstExtract] = useState('-----');
@@ -97,7 +97,7 @@ const Create = () => {
           </Grid>
           <Grid xs={6}>
             <Text css={{ textAlign: 'center', width: '100%' }} h1 size={18}>
-              Create course
+              Import course
             </Text>
           </Grid>
           <Grid xs={3}>
@@ -164,4 +164,4 @@ const Create = () => {
   );
 };
 
-export default Create;
+export default Import;

@@ -53,9 +53,13 @@ const Home = () => {
     getData();
   }, []);
 
-  const handleCreate = () => {
-    navigate('/create');
+  const handleImportModule = () => {
+    navigate('/import');
   };
+
+  const handleCreate = () => {
+    navigate('/create')
+  }
 
   const handleChangeSelect = (e) => {
     console.log(e);
@@ -179,8 +183,11 @@ const Home = () => {
               css={{ $$dropdownMenuWidth: '280px' }}
               onAction={(e) => {
                 switch (e) {
-                  case 'quizlet':
+                  case 'create': 
                     handleCreate();
+                    break;
+                  case 'quizlet':
+                    handleImportModule();
                     break;
                   case 'import':
                     setShowImport(true);
@@ -204,7 +211,7 @@ const Home = () => {
                 <Dropdown.Item
                   key="crawl"
                   description="Crawl data from Quizlet"
-                  color="success"
+                  color="default"
                   icon={<FcMultipleInputs />}
                 >
                   Crawl data <b>{'(recommended)'}</b>
@@ -212,12 +219,20 @@ const Home = () => {
               </Dropdown.Section>
               <Dropdown.Section title="Manual">
                 <Dropdown.Item
+                  key="create"
+                  description="Create a module as a dictionary"
+                  color="success"
+                  icon={<FcFile />}
+                >
+                  Create module
+                </Dropdown.Item>
+                <Dropdown.Item
                   key="quizlet"
                   description="Importing a module as a table"
                   color="primary"
                   icon={<FcFile />}
                 >
-                  Create module
+                  Import module
                 </Dropdown.Item>
                 <Dropdown.Item
                   key="import"
@@ -230,7 +245,7 @@ const Home = () => {
                 <Dropdown.Item
                   key="merge"
                   description="Merge course for easy learning"
-                  color="success"
+                  color="default"
                   icon={<FcCollect />}
                 >
                   Merge course

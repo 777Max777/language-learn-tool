@@ -1,14 +1,20 @@
-import Create from '../components/Create/Create';
+import ConfigureModule from '../components/ConfigureModule/ConfigureModule';
 import { useEffect } from 'react';
-import ReactGA from 'react-ga4';
+import { nanoid } from 'nanoid'
+import {v4 as uuid} from 'uuid'
 
 const CreateScreen = ({ title }) => {
   useEffect(() => {
     document.title = title;
-    ReactGA.event({ category: 'Create', action: 'Create course' });
   }, [title]);
 
-  return <Create />;
+  return (
+    <ConfigureModule 
+      moduleId={nanoid(15)}
+      moduleName={''}
+      moduleTermItems={[{ id: uuid(), term: '', definition: '', isValid: true }]}
+    />
+  )
 };
 
 export default CreateScreen;

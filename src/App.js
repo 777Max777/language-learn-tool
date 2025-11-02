@@ -1,10 +1,11 @@
 import { Route, Routes } from 'react-router-dom';
 import HomeScreen from './screens/HomeScreen';
-import CreateScreen from './screens/CreateScreen';
+import ImportScreen from './screens/ImportScreen';
 import Layout from './components/Layout/Layout';
 import NotFoundScreen from './screens/NotFoundScreen';
 import DetailCourseScreen from './screens/DetailCourseScreen';
-import LearnScreen from './screens/LearnScreen';
+import CreateScreen from './screens/CreateScreen'
+import EditCourseScreen from './screens/EditCourseScreen';
 import ExamScreen from './screens/ExamScreen';
 import {ListeningScreen, LearningScreen} from './screens/LearnScreen';
 import LearnPmgScreen from './screens/LearnPmgScreen';
@@ -26,14 +27,22 @@ function App() {
   return (
     <Routes>
       <Route path={'/'} element={<Layout />}>
-        <Route path={'/'} element={<HomeScreen title={'Home'} />} />
+        <Route path={'/'} element={<HomeScreen title={'Home'} />} />        
         <Route
           path={'/create'}
-          element={<CreateScreen title={'Create course'} />}
+          element={<CreateScreen title={'Create module'} />}
+        />
+        <Route
+          path={'/import'}
+          element={<ImportScreen title={'Import course'} />}
         />
         <Route
           path={'/course/:id'}
           element={<DetailCourseScreen title={'Detail course'} />}
+        />
+        <Route
+          path={'/edit/course/:id'}
+          element={<EditCourseScreen title={'Edit module'} />}
         />
         <Route
           path={'/learn/:id'}
