@@ -18,7 +18,7 @@ const EditDictionaryModuleForm = ({ termItems,  setTermItems, saveTermItems }) =
           Save
         </Button>
         <Button auto shadow color="secondary" onPress={addTermItem}>
-          Add Order Item
+          Add new term
         </Button>
       </Grid.Container>
     </>

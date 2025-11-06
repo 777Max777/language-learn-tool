@@ -101,7 +101,7 @@ const ConfigureModule = ({ moduleId, moduleName, moduleTermItems }) => {
             </Grid>
             <Grid xs={6}>
               <Text css={{ textAlign: 'center', width: '100%' }} h1 size={18}>
-                Configure module
+                Module configuration
               </Text>
             </Grid>
             <Grid xs={3}>

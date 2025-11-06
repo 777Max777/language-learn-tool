@@ -65,17 +65,24 @@ const DictionaryTermForm = ( { termItems, setTermItems } ) => {
     { termItems.length > 0 && termItems.map((ti, index) =>
       (
         <React.Fragment key={ti.id}>
-          <Grid xs={5}>
-            <Card.Body>
+          <Grid xs={4} >
               <Text
+                style={{ paddingBottom: '10px', alignContent: 'end'}}
                 size={16}
-                css={{
-                  whiteSpace: "pre-line",
-                  fontWeight: "500",
-                }}
               > 
-                Term
+                {index+1} 
               </Text>
+            <Card.Body style={{ paddingTop: '0px'}}>
+              { index == 0 &&
+                (<Text
+                  size={16}
+                  css={{
+                    fontWeight: "500",
+                  }}
+                > 
+                  Term
+                </Text>
+              )}
               <Input
                 aria-label="None"
                 status={ti.isValid ? 'default' : 'error'}
@@ -90,16 +97,18 @@ const DictionaryTermForm = ( { termItems, setTermItems } ) => {
             </Card.Body>
           </Grid>
           <Grid xs={7}>
-            <Card.Body>
-              <Text
-                size={16}
-                css={{
-                  whiteSpace: "pre-line",
-                  fontWeight: "500"
-                }}
-              > 
-                Definition
-              </Text>
+            <Card.Body style={{ paddingTop: '0px'}}>
+              { index == 0 &&
+                (<Text
+                  size={16}
+                  css={{
+                    whiteSpace: "pre-line",
+                    fontWeight: "500"
+                  }}
+                > 
+                  Definition
+                </Text>
+              )}
               <Input
                 aria-label="None"
                 status={ti.isValid ? 'default' : 'error'}
