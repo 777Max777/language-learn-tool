@@ -486,14 +486,6 @@ const DetailCourse = () => {
             >
               <Dropdown.Section title={'Actions'}>
                 <Dropdown.Item
-                  key="Edit"
-                  description="Progress will be reset"
-                  color="warning"
-                  icon={<FcSynchronize size={20} />}
-                >
-                  Edit course
-                </Dropdown.Item>
-                <Dropdown.Item
                   key="Learn"
                   description="Learn course multiple choice"
                   color="success"
@@ -508,6 +500,15 @@ const DetailCourse = () => {
                   icon={<FcReading size={20} />}
                 >
                   Listening
+                </Dropdown.Item>
+
+                <Dropdown.Item
+                  key="Edit"
+                  description="Progress will be reset"
+                  color="warning"
+                  icon={<FcSynchronize size={20} />}
+                >
+                  Edit course
                 </Dropdown.Item>
                 
                 <Dropdown.Item
