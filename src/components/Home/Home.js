@@ -207,17 +207,8 @@ const Home = () => {
                 }
               }}
             >
-              <Dropdown.Section title="Automatic">
-                <Dropdown.Item
-                  key="crawl"
-                  description="Crawl data from Quizlet"
-                  color="default"
-                  icon={<FcMultipleInputs />}
-                >
-                  Crawl data <b>{'(recommended)'}</b>
-                </Dropdown.Item>
-              </Dropdown.Section>
-              <Dropdown.Section title="Manual">
+              
+              <Dropdown.Section title="Module management">
                 <Dropdown.Item
                   key="create"
                   description="Create a module as a dictionary"
@@ -234,14 +225,7 @@ const Home = () => {
                 >
                   Import module
                 </Dropdown.Item>
-                <Dropdown.Item
-                  key="import"
-                  description="Import course by share code"
-                  color="warning"
-                  icon={<FcDownload />}
-                >
-                  Import code
-                </Dropdown.Item>
+              
                 <Dropdown.Item
                   key="merge"
                   description="Merge course for easy learning"

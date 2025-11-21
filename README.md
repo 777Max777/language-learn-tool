@@ -65,7 +65,7 @@ webpack compiled successfully
   <img width='60%' src='./image-github/image1.png'>
 </div>
 
-- Step 3: Setup `Between term and definition` is "-----" and `Between rows` is "\n\n\n", Click button "Copy text".
+- Step 3: Setup `Between term and definition` is "\t" and `Between rows` is "\n", Click button "Copy text".
 
 <div style='text-align: center'>
   <img width='60%' src='./image-github/image2.png'>

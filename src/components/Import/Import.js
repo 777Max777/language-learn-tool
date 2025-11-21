@@ -19,8 +19,8 @@ import { useNavigate } from 'react-router-dom';
 const Import = () => {
   const [isValidName, setIsValidName] = useState(true);
   const [isValidContent, setIsValidContent] = useState(true);
-  const [firstExtract, setFirstExtract] = useState('-----');
-  const [secondExtract, setSecondExtract] = useState('\n\n\n');
+  const [firstExtract, setFirstExtract] = useState('\t');
+  const [secondExtract, setSecondExtract] = useState('\n');
   const [isReverse, setIsReverse] = useState(false);
   const [isSplit, setIsSplit] = useState(false);
 
@@ -147,11 +147,11 @@ const Import = () => {
               <Input
                 readOnly={true}
                 label="Between term and definition"
-                value={'-----'}
+                value={'TAB'}
               />
             </Grid>
             <Grid xs={3}>
-              <Input readOnly={true} label="Between rows" value={'\\n\\n\\n'} />
+              <Input readOnly={true} label="Between rows" value={'\\n'} />
             </Grid>
           </Grid.Container>
         </Card.Body>

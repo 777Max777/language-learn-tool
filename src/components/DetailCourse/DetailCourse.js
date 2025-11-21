@@ -165,9 +165,9 @@ const DetailCourse = () => {
     const list = JSON.parse(localStorage.getItem(id)).data;
     const t = list
       .map((item) => {
-        return item.answer + '-----' + item.question;
+        return item.answer + '\t' + item.question;
       })
-      .join('\n\n\n');
+      .join('\n');
     setContentExport(t);
     setShowModalExport(true);
   };
@@ -509,29 +509,14 @@ const DetailCourse = () => {
                 >
                   Listening
                 </Dropdown.Item>
-                <Dropdown.Item
-                  key="Exam"
-                  description="Exam course with layout EOS 🤣"
-                  color="warning"
-                  icon={<FcGraduationCap size={20} />}
-                >
-                  Take exam
-                </Dropdown.Item>
-                <Dropdown.Item
-                  key="Upload"
-                  description="Upload course to server ☁️"
-                  color="primary"
-                  icon={<FcEnteringHeavenAlive size={20} />}
-                >
-                  Upload to server
-                </Dropdown.Item>
+                
                 <Dropdown.Item
                   key="Export"
-                  description="Export course to text for Quizlet"
+                  description="Export course to text"
                   color="secondary"
                   icon={<FcExport size={20} />}
                 >
-                  Export to quizlet
+                  Export to text
                 </Dropdown.Item>
               </Dropdown.Section>
               <Dropdown.Section title={'Danger Zone'}>
